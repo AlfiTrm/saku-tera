@@ -62,19 +62,26 @@ test("landing uses shared container and shared navbar", () => {
   const container = read("src/shared/components/layout/Container.tsx");
   const navbar = read("src/features/landing/components/LandingNavbar.tsx");
   const landingPage = read("src/app/(landing)/page.tsx");
-  const pressButton = read("src/shared/components/buttons/PressButton.tsx");
-  const pressButtonConfig = read(
-    "src/shared/components/buttons/pressButtonConfig.ts",
+  const installButton = read("src/features/pwa/components/InstallAppButton.tsx");
+  const installInstructions = read(
+    "src/features/pwa/components/InstallInstructions.tsx",
   );
+  const installHook = read("src/features/pwa/hooks/useInstallPrompt.ts");
+  const pressButton = read("src/shared/components/buttons/PressButton.tsx");
+  const pressButtonConfig = read("src/shared/components/buttons/pressButtonConfig.ts");
 
   assert.match(container, /max-w-\[1200px\]/);
   assert.match(container, /px-4/);
   assert.match(navbar, /Container/);
-  assert.match(navbar, /PressButton/);
-  assert.match(navbar, /Daftar Gratis/);
+  assert.match(navbar, /InstallAppButton/);
   assert.match(navbar, /sakutera-full\.svg/);
   assert.match(navbar, /border-b/);
   assert.match(navbar, /text-base/);
+  assert.match(installButton, /Daftar Gratis|Install App|Buka App/);
+  assert.match(installButton, /beforeinstallprompt|isPromptAvailable/);
+  assert.match(installInstructions, /Add to Home Screen|Tambah ke Layar Utama/);
+  assert.match(installHook, /beforeinstallprompt/);
+  assert.match(installHook, /appinstalled/);
   assert.match(pressButton, /^"use client";/);
   assert.match(pressButton, /motion\./);
   assert.match(pressButtonConfig, /bg-primary/);

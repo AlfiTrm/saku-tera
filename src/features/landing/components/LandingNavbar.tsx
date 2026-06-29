@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import PressButton from "@/src/shared/components/buttons/PressButton";
+import { InstallAppButton } from "@/src/features/pwa/components/InstallAppButton";
 import { Container } from "@/src/shared/components/layout/Container";
 
 const navItems = [
@@ -37,13 +37,7 @@ export function LandingNavbar() {
           </nav>
         </div>
 
-        <PressButton
-          className="shrink-0 px-4 py-2 text-sm sm:px-5"
-          href="#daftar"
-          variant="primary"
-        >
-          Daftar Gratis
-        </PressButton>
+        <InstallAppButton />
       </Container>
     </header>
   );

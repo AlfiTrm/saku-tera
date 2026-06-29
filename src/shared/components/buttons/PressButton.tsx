@@ -18,7 +18,7 @@ type BaseProps = {
 };
 
 type LinkButtonProps = BaseProps &
-  Omit<ComponentProps<typeof Link>, "children" | "className" | "href"> & {
+  Omit<ComponentProps<typeof Link>, "children" | "className"> & {
     href: string;
   };
 
@@ -32,29 +32,28 @@ type NativeButtonProps = BaseProps &
 
 type PressButtonProps = LinkButtonProps | NativeButtonProps;
 
-export default function PressButton({
-  variant = "primary",
-  children,
-  className = "",
-  disabled = false,
-  href,
-  type = "button",
-  onClick,
-  ...props
-}: PressButtonProps) {
-  const buttonVariant = getPressButtonVariant(variant);
-  const motionState = getPressButtonMotion(variant, disabled);
-  const buttonClassName = twMerge(
-    "inline-flex cursor-pointer items-center justify-center rounded-[10px] px-5 py-2.5 text-sm font-semibold",
-    "transition-colors duration-150",
-    "disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none",
-    buttonVariant.base,
-    className,
-  );
+export default function PressButton(props: PressButtonProps) {
+  if ("href" in props && props.href) {
+    const {
+      variant = "primary",
+      children,
+      className = "",
+      disabled = false,
+      href,
+      ...linkProps
+    } = props;
+    const buttonVariant = getPressButtonVariant(variant);
+    const motionState = getPressButtonMotion(variant, disabled);
+    const buttonClassName = twMerge(
+      "inline-flex cursor-pointer items-center justify-center rounded-[10px] px-5 py-2.5 text-sm font-semibold",
+      "transition-colors duration-150",
+      "disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none",
+      buttonVariant.base,
+      className,
+    );
 
-  if (href) {
     return (
-      <Link href={href} {...props}>
+      <Link href={href} {...linkProps}>
         <motion.span
           aria-disabled={disabled}
           className={buttonClassName}
@@ -69,6 +68,25 @@ export default function PressButton({
     );
   }
 
+  const {
+    variant = "primary",
+    children,
+    className = "",
+    disabled = false,
+    type = "button",
+    onClick,
+    ...buttonProps
+  } = props;
+  const buttonVariant = getPressButtonVariant(variant);
+  const motionState = getPressButtonMotion(variant, disabled);
+  const buttonClassName = twMerge(
+    "inline-flex cursor-pointer items-center justify-center rounded-[10px] px-5 py-2.5 text-sm font-semibold",
+    "transition-colors duration-150",
+    "disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none",
+    buttonVariant.base,
+    className,
+  );
+
   return (
     <motion.button
       className={buttonClassName}
@@ -79,7 +97,7 @@ export default function PressButton({
       type={type}
       whileHover={motionState.whileHover}
       whileTap={motionState.whileTap}
-      {...props}
+      {...buttonProps}
     >
       {children}
     </motion.button>
