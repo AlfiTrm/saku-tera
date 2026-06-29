@@ -68,6 +68,7 @@ export default function PressButton(props: PressButtonProps) {
     );
   }
 
+  const nativeProps = props as NativeButtonProps;
   const {
     variant = "primary",
     children,
@@ -76,7 +77,7 @@ export default function PressButton(props: PressButtonProps) {
     type = "button",
     onClick,
     ...buttonProps
-  } = props;
+  } = nativeProps;
   const buttonVariant = getPressButtonVariant(variant);
   const motionState = getPressButtonMotion(variant, disabled);
   const buttonClassName = twMerge(
@@ -88,18 +89,22 @@ export default function PressButton(props: PressButtonProps) {
   );
 
   return (
-    <motion.button
-      className={buttonClassName}
+    <button
+      className="cursor-pointer rounded-[10px] border-0 bg-transparent p-0 disabled:cursor-not-allowed"
       disabled={disabled}
       onClick={onClick}
-      style={{ boxShadow: buttonVariant.shadow }}
-      transition={{ type: "spring", stiffness: 500, damping: 30 }}
       type={type}
-      whileHover={motionState.whileHover}
-      whileTap={motionState.whileTap}
       {...buttonProps}
     >
-      {children}
-    </motion.button>
+      <motion.span
+        className={buttonClassName}
+        style={{ boxShadow: buttonVariant.shadow }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        whileHover={motionState.whileHover}
+        whileTap={motionState.whileTap}
+      >
+        {children}
+      </motion.span>
+    </button>
   );
 }
