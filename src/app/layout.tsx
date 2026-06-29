@@ -1,17 +1,34 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { ServiceWorkerRegistration } from "@/src/features/pwa/components/service-worker-registration";
 import "../shared/styles/globals.css";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
-});
-
 export const metadata: Metadata = {
-  title: "SAKUTERA",
-  description: "nanti diisi",
+  title: {
+    default: "SakuTera",
+    template: "%s | SakuTera",
+  },
+  description: "Landing publik dan PWA shell SakuTera dipisah dari awal.",
+  manifest: "/manifest.webmanifest",
+  applicationName: "SakuTera",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      {
+        url: "/icons/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "SakuTera",
+  },
 };
 
 export default function RootLayout({
@@ -20,8 +37,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${poppins.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="id" className="h-full antialiased">
+      <body className="min-h-full bg-sand font-sans text-ink">
+        <ServiceWorkerRegistration />
+        {children}
+      </body>
     </html>
   );
 }

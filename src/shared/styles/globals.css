@@ -1,18 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-    
     --color-primary: #3066BE;
-    
     --color-secondary: #171738;
-
     --color-tertiary: #EE964B;
-
     --color-white: #FFFFFA;
-
     --color-black: #0F1108;
-}
-
-body {
-    font-family: var(--font-poppins);
+    --font-sans: "Poppins", "Avenir Next", "Segoe UI", sans-serif;
 }
