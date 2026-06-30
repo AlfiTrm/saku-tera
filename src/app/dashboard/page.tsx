@@ -1,9 +1,5 @@
-import { DashboardSummary } from "@/src/features/onboarding/components/DashboardSummary";
+import { DashboardHomeView } from "@/src/features/dashboard/components";
 
 export default function DashboardPage() {
-  return (
-    <main className="grid min-h-screen place-items-center p-6">
-      <DashboardSummary />
-    </main>
-  );
+  return <DashboardHomeView />;
 }
