@@ -1,4 +1,4 @@
-type DashboardTab = "home" | "ledger" | "wallet" | "profile";
+type DashboardTab = "home" | "ledger" | "passport" | "profile";
 
 export function getDashboardNavItems(activeTab: DashboardTab) {
   return [
@@ -15,10 +15,10 @@ export function getDashboardNavItems(activeTab: DashboardTab) {
       label: "Buku Kas",
     },
     {
-      href: "/dashboard",
+      href: "/dashboard/passport",
       icon: "solar:wallet-money-bold-duotone",
-      isActive: activeTab === "wallet",
-      label: "Dompet",
+      isActive: activeTab === "passport",
+      label: "Passport",
     },
     {
       href: "/dashboard",

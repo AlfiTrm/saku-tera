@@ -44,6 +44,7 @@ export default function PressButton(props: PressButtonProps) {
     } = props;
     const buttonVariant = getPressButtonVariant(variant);
     const motionState = getPressButtonMotion(variant, disabled);
+    const shouldFillWidth = /\bw-full\b/.test(className);
     const buttonClassName = twMerge(
       "inline-flex select-none items-center justify-center rounded-[10px] px-5 py-2.5 text-sm font-semibold touch-manipulation",
       "transition-colors duration-150 [-webkit-tap-highlight-color:transparent]",
@@ -53,7 +54,7 @@ export default function PressButton(props: PressButtonProps) {
     );
 
     return (
-      <Link href={href} {...linkProps}>
+      <Link className={shouldFillWidth ? "w-full" : undefined} href={href} {...linkProps}>
         <motion.span
           aria-disabled={disabled}
           className={buttonClassName}
@@ -80,6 +81,7 @@ export default function PressButton(props: PressButtonProps) {
   } = nativeProps;
   const buttonVariant = getPressButtonVariant(variant);
   const motionState = getPressButtonMotion(variant, disabled);
+  const shouldFillWidth = /\bw-full\b/.test(className);
   const buttonClassName = twMerge(
     "inline-flex select-none items-center justify-center rounded-[10px] px-5 py-2.5 text-sm font-semibold touch-manipulation",
     "transition-colors duration-150 [-webkit-tap-highlight-color:transparent]",
@@ -90,7 +92,10 @@ export default function PressButton(props: PressButtonProps) {
 
   return (
     <button
-      className="cursor-pointer rounded-[10px] border-0 bg-transparent p-0 disabled:cursor-not-allowed"
+      className={twMerge(
+        "cursor-pointer rounded-[10px] border-0 bg-transparent p-0 disabled:cursor-not-allowed",
+        shouldFillWidth ? "w-full" : "",
+      )}
       disabled={disabled}
       onClick={onClick}
       type={type}
