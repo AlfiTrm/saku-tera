@@ -13,6 +13,23 @@ test("landing route group and app surfaces exist", () => {
   assert.equal(existsSync(path.join(root, "src/app/(landing)/page.tsx")), true);
   assert.equal(existsSync(path.join(root, "src/app/onboard/page.tsx")), true);
   assert.equal(existsSync(path.join(root, "src/app/dashboard/page.tsx")), true);
+  assert.equal(
+    existsSync(path.join(root, "src/app/onboard/register/page.tsx")),
+    true,
+  );
+  assert.equal(
+    existsSync(path.join(root, "src/app/onboard/verify/page.tsx")),
+    true,
+  );
+  assert.equal(existsSync(path.join(root, "src/app/onboard/work/page.tsx")), true);
+  assert.equal(
+    existsSync(path.join(root, "src/app/onboard/income-source/page.tsx")),
+    true,
+  );
+  assert.equal(
+    existsSync(path.join(root, "src/app/onboard/protection/page.tsx")),
+    true,
+  );
 });
 
 test("manifest starts the installed app in onboard flow", () => {
@@ -26,15 +43,31 @@ test("manifest starts the installed app in onboard flow", () => {
   assert.match(manifest, /apple-touch-icon\.png/);
 });
 
-test("placeholder app routes stay intentionally minimal for now", () => {
+test("onboard route redirects into the registration flow", () => {
   const onboardPage = read("src/app/onboard/page.tsx");
-  const landingPage = read("src/app/(landing)/page.tsx");
-  const dashboardPage = read("src/app/dashboard/page.tsx");
 
-  assert.match(landingPage, /Ini landing nanti\./);
-  assert.match(onboardPage, /Ini onboard nanti\./);
-  assert.match(dashboardPage, /Ini dashboard nanti\./);
-  assert.doesNotMatch(onboardPage, /localStorage/);
+  assert.match(onboardPage, /redirect\(["'`]\/onboard\/register["'`]\)/);
+});
+
+test("onboarding flow covers register, otp, work, source, and protection", () => {
+  const registerPage = read("src/app/onboard/register/page.tsx");
+  const phoneField = read("src/features/onboarding/components/PhoneNumberField.tsx");
+  const verifyPage = read("src/app/onboard/verify/page.tsx");
+  const workPage = read("src/app/onboard/work/page.tsx");
+  const sourcePage = read("src/app/onboard/income-source/page.tsx");
+  const protectionPage = read("src/app/onboard/protection/page.tsx");
+
+  assert.match(registerPage, /Kirim Kode OTP/);
+  assert.match(registerPage, /PhoneNumberField/);
+  assert.match(phoneField, /Indonesia/);
+  assert.match(phoneField, /Malaysia/);
+  assert.match(registerPage, /showProgress=\{false\}/);
+  assert.match(verifyPage, /Verifikasi/);
+  assert.match(verifyPage, /OtpInput/);
+  assert.match(verifyPage, /showProgress=\{false\}/);
+  assert.match(workPage, /Kamu bekerja sebagai apa\?/);
+  assert.match(sourcePage, /Dari mana penghasilan kamu masuk\?/);
+  assert.match(protectionPage, /Mulai Catat Penghasilan!/);
 });
 
 test("app-only routes use an installed-mode gate", () => {
@@ -46,7 +79,7 @@ test("app-only routes use an installed-mode gate", () => {
   assert.match(dashboardLayout, /InstalledAppGate/);
   assert.match(gate, /matchMedia\([\s\S]*?["'`]\(display-mode:\s*standalone\)["'`][\s\S]*?\)/);
   assert.match(gate, /"standalone"\s+in\s+navigator/);
-  assert.match(gate, /router\.replace\(["'`]\/["'`]\)/);
+  assert.doesNotMatch(gate, /router\.replace\(["'`]\/["'`]\)/);
 });
 
 test("root layout registers the service worker entry point", () => {
@@ -83,6 +116,7 @@ test("landing uses shared container and shared navbar", () => {
   assert.match(installHook, /beforeinstallprompt/);
   assert.match(installHook, /appinstalled/);
   assert.match(pressButton, /^"use client";/);
+  assert.match(pressButton, /touch-manipulation/);
   assert.match(pressButton, /motion\./);
   assert.match(pressButtonConfig, /bg-primary/);
   assert.match(pressButtonConfig, /text-secondary/);
@@ -100,4 +134,17 @@ test("shared component structure is grouped by responsibility", () => {
   assert.match(rootIndex, /feedback/);
   assert.match(skeleton, /@\/src\/shared\/lib\/cn/);
   assert.match(cn, /twMerge/);
+});
+
+test("onboarding flow persists draft state locally", () => {
+  const storage = read("src/features/onboarding/lib/onboarding-storage.ts");
+  const registerPage = read("src/app/onboard/register/page.tsx");
+  const verifyPage = read("src/app/onboard/verify/page.tsx");
+  const protectionPage = read("src/app/onboard/protection/page.tsx");
+
+  assert.match(storage, /sakutera:onboarding-draft/);
+  assert.match(storage, /sakutera:onboarding-complete/);
+  assert.match(registerPage, /writeOnboardingDraft/);
+  assert.match(verifyPage, /writeOnboardingDraft/);
+  assert.match(protectionPage, /markOnboardingComplete/);
 });

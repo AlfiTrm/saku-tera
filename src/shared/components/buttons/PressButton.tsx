@@ -45,8 +45,8 @@ export default function PressButton(props: PressButtonProps) {
     const buttonVariant = getPressButtonVariant(variant);
     const motionState = getPressButtonMotion(variant, disabled);
     const buttonClassName = twMerge(
-      "inline-flex cursor-pointer items-center justify-center rounded-[10px] px-5 py-2.5 text-sm font-semibold",
-      "transition-colors duration-150",
+      "inline-flex select-none items-center justify-center rounded-[10px] px-5 py-2.5 text-sm font-semibold touch-manipulation",
+      "transition-colors duration-150 [-webkit-tap-highlight-color:transparent]",
       "disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none",
       buttonVariant.base,
       className,
@@ -58,7 +58,7 @@ export default function PressButton(props: PressButtonProps) {
           aria-disabled={disabled}
           className={buttonClassName}
           style={{ boxShadow: buttonVariant.shadow }}
-          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          transition={{ type: "spring", stiffness: 380, damping: 26, mass: 0.9 }}
           whileHover={motionState.whileHover}
           whileTap={motionState.whileTap}
         >
@@ -81,8 +81,8 @@ export default function PressButton(props: PressButtonProps) {
   const buttonVariant = getPressButtonVariant(variant);
   const motionState = getPressButtonMotion(variant, disabled);
   const buttonClassName = twMerge(
-    "inline-flex cursor-pointer items-center justify-center rounded-[10px] px-5 py-2.5 text-sm font-semibold",
-    "transition-colors duration-150",
+    "inline-flex select-none items-center justify-center rounded-[10px] px-5 py-2.5 text-sm font-semibold touch-manipulation",
+    "transition-colors duration-150 [-webkit-tap-highlight-color:transparent]",
     "disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none",
     buttonVariant.base,
     className,
@@ -99,7 +99,7 @@ export default function PressButton(props: PressButtonProps) {
       <motion.span
         className={buttonClassName}
         style={{ boxShadow: buttonVariant.shadow }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        transition={{ type: "spring", stiffness: 380, damping: 26, mass: 0.9 }}
         whileHover={motionState.whileHover}
         whileTap={motionState.whileTap}
       >

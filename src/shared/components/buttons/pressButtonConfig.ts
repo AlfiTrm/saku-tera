@@ -49,7 +49,7 @@ export function getPressButtonMotion(
       boxShadow: getPressButtonVariant(variant).hoverShadow,
     },
     whileTap: {
-      y: 3,
+      scale: 0.972,
       boxShadow: getPressButtonVariant(variant).pressShadow,
     },
   };

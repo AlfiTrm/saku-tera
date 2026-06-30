@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 type InstalledAppGateProps = {
   children: React.ReactNode;
@@ -23,22 +22,7 @@ function subscribe() {
 }
 
 export function InstalledAppGate({ children }: InstalledAppGateProps) {
-  const router = useRouter();
-  const isInstalled = useSyncExternalStore(
-    subscribe,
-    isInstalledAppMode,
-    () => false,
-  );
-
-  useEffect(() => {
-    if (!isInstalled) {
-      router.replace("/");
-    }
-  }, [isInstalled, router]);
-
-  if (!isInstalled) {
-    return null;
-  }
+  useSyncExternalStore(subscribe, isInstalledAppMode, () => false);
 
   return children;
 }
