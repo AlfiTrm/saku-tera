@@ -5,6 +5,7 @@ import { useState, useSyncExternalStore } from "react";
 import PressButton from "@/src/shared/components/buttons/PressButton";
 import { AppBottomNav } from "@/src/shared/components/navigation";
 import { BottomSheet } from "@/src/shared/components/overlays";
+import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 import {
   readOnboardingDraft,
 } from "@/src/features/onboarding/lib/onboarding-storage";
@@ -292,31 +293,7 @@ export function DashboardHomeView() {
         </section>
       </main>
 
-      <AppBottomNav
-        items={[
-          {
-            href: "/dashboard",
-            icon: "solar:home-2-bold-duotone",
-            isActive: true,
-            label: "Beranda",
-          },
-          {
-            href: "/dashboard",
-            icon: "solar:clipboard-list-bold-duotone",
-            label: "Catatan",
-          },
-          {
-            href: "/dashboard",
-            icon: "solar:wallet-money-bold-duotone",
-            label: "Dompet",
-          },
-          {
-            href: "/dashboard",
-            icon: "solar:user-rounded-bold-duotone",
-            label: "Profil",
-          },
-        ]}
-      />
+      <AppBottomNav items={getDashboardNavItems("home")} />
 
       <IncomeEntrySheet isOpen={isSheetOpen} onClose={() => setIsSheetOpen(false)} />
     </>
