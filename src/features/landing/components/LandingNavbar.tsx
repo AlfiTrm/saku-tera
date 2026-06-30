@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { InstallAppButton } from "@/src/features/pwa/components/InstallAppButton";
+import { LandingInstallButton } from "@/src/features/landing/components/LandingInstallButton";
 import { Container } from "@/src/shared/components/layout/Container";
 
 const navItems = [
@@ -11,7 +11,7 @@ const navItems = [
 
 export function LandingNavbar() {
   return (
-    <header className="w-full border-b border-black/10 bg-white">
+    <header className="fixed inset-x-0 top-0 z-30 border-b border-secondary/8 bg-white/96 backdrop-blur-sm">
       <Container className="flex items-center justify-between gap-4 py-4">
         <div className="flex min-w-0 items-center gap-6">
           <Link className="shrink-0" href="/">
@@ -37,7 +37,7 @@ export function LandingNavbar() {
           </nav>
         </div>
 
-        <InstallAppButton />
+        <LandingInstallButton className="shrink-0 px-4 py-2 text-sm sm:px-5" />
       </Container>
     </header>
   );
