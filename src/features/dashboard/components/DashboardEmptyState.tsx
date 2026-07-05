@@ -7,6 +7,7 @@ type DashboardEmptyStateProps = {
   action?: ReactNode;
   description: string;
   icon: string;
+  tone?: "default" | "error";
   title: string;
 };
 
@@ -14,11 +15,22 @@ export function DashboardEmptyState({
   action,
   description,
   icon,
+  tone = "default",
   title,
 }: DashboardEmptyStateProps) {
   return (
-    <div className="grid justify-items-center gap-3 rounded-[22px] border border-dashed border-black/8 bg-white px-5 py-8 text-center shadow-[0_10px_22px_rgba(23,23,56,0.04)]">
-      <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/8 text-primary">
+    <div
+      className={`grid justify-items-center gap-3 rounded-[22px] px-5 py-8 text-center shadow-[0_10px_22px_rgba(23,23,56,0.04)] ${
+        tone === "error"
+          ? "border border-black/6 bg-white"
+          : "border border-dashed border-black/8 bg-white"
+      }`}
+    >
+      <span
+        className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${
+          tone === "error" ? "bg-secondary/6 text-secondary/72" : "bg-primary/8 text-primary"
+        }`}
+      >
         <Icon className="h-6 w-6" icon={icon} />
       </span>
       <div className="grid gap-1">

@@ -18,20 +18,10 @@ export function DashboardHomeView() {
     return <DashboardScreenSkeleton />;
   }
 
-  if (!data) {
-    return (
-      <>
-        <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-3 pb-28 pt-3">
-          <DashboardEmptyState
-            description={error || "Coba muat ulang sebentar lagi."}
-            icon="solar:danger-circle-bold-duotone"
-            title="Dashboard belum bisa dimuat"
-          />
-        </main>
-        <AppBottomNav items={getDashboardNavItems("home")} />
-      </>
-    );
-  }
+  const summary = data?.summary ?? null;
+  const trend = data?.trend ?? [];
+  const transactions = data?.transactions ?? [];
+  const userFullName = data?.userFullName || "Pengguna";
 
   return (
     <>
@@ -40,7 +30,7 @@ export function DashboardHomeView() {
           <div className="grid gap-0.5">
             <p className="text-[11px] font-medium text-secondary/32">Senin, 29 Juni 2026</p>
             <h1 className="text-[1.7rem] font-bold leading-none tracking-[-0.05em] text-secondary">
-              Halo, {data.userFullName || "Rudi"}
+              Halo, {userFullName}
             </h1>
           </div>
 
@@ -54,63 +44,76 @@ export function DashboardHomeView() {
         </header>
 
         <section className="overflow-hidden rounded-[24px] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_24%),linear-gradient(145deg,#4478d0_0%,#3c70ca_48%,#2858af_100%)] px-4 py-4 text-white shadow-[0_14px_34px_rgba(48,102,190,0.24)]">
-          <p className="text-[11px] font-semibold tracking-[-0.01em] text-white/68">
-            Estimasi gaji bulan ini
-          </p>
-          <h2 className="mt-1.5 text-[2.2rem] font-bold leading-none tracking-[-0.07em] sm:text-[2.45rem]">
-            {data.summary.estimatedMonthlyIncome}
-          </h2>
-
-          <div className="mt-3 grid grid-cols-2 gap-2 text-[10px] font-semibold">
-            <div className="flex min-h-9 items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-emerald-200">
-              <span className="rounded-full bg-emerald-400/16 px-1.5 py-0.5 text-[9px] text-emerald-100">
-                {data.summary.monthlyGrowth}
-              </span>
-              <span className="text-white/72">vs bulan lalu</span>
-            </div>
-            <div className="flex min-h-9 items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-emerald-200">
-              <span className="h-2 w-2 rounded-full bg-emerald-300" />
-              <span className="text-[9px] text-emerald-100">{data.summary.riskLabel}</span>
-            </div>
-          </div>
-
-          <div className="mt-3.5 grid grid-cols-3 gap-3 border-t border-white/10 pt-3.5">
-            <div>
-              <p className="text-[10px] text-white/44">Hari ini</p>
-              <p className="mt-1 text-[0.95rem] font-semibold leading-5">
-                {data.summary.latestDailyIncome}
+          {summary ? (
+            <>
+              <p className="text-[11px] font-semibold tracking-[-0.01em] text-white/68">
+                Estimasi gaji bulan ini
               </p>
-            </div>
-            <div>
-              <p className="text-[10px] text-white/44">{data.summary.activeDays} entri</p>
-              <p className="mt-1 text-[0.95rem] font-semibold leading-5">Rantai Valid</p>
-            </div>
-            <div>
-              <p className="text-[10px] text-white/44">Model</p>
-              <p className="mt-1 text-[0.95rem] font-semibold leading-5 capitalize">
-                {data.summary.trendModel}
-              </p>
-            </div>
-          </div>
+              <h2 className="mt-1.5 text-[2.2rem] font-bold leading-none tracking-[-0.07em] sm:text-[2.45rem]">
+                {summary.estimatedMonthlyIncome}
+              </h2>
 
-          <div className="mt-3.5 border-t border-white/10 pt-3">
-            <div className="flex items-center gap-2">
-              <span
-                className={`inline-flex h-2.5 w-2.5 rounded-full ${
-                  data.summary.isDataSufficient ? "bg-emerald-300" : "bg-amber-300"
-                }`}
+              <div className="mt-3 grid grid-cols-2 gap-2 text-[10px] font-semibold">
+                <div className="flex min-h-9 items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-emerald-200">
+                  <span className="rounded-full bg-emerald-400/16 px-1.5 py-0.5 text-[9px] text-emerald-100">
+                    {summary.monthlyGrowth}
+                  </span>
+                  <span className="text-white/72">vs bulan lalu</span>
+                </div>
+                <div className="flex min-h-9 items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-emerald-200">
+                  <span className="h-2 w-2 rounded-full bg-emerald-300" />
+                  <span className="text-[9px] text-emerald-100">{summary.riskLabel}</span>
+                </div>
+              </div>
+
+              <div className="mt-3.5 grid grid-cols-3 gap-3 border-t border-white/10 pt-3.5">
+                <div>
+                  <p className="text-[10px] text-white/44">Hari ini</p>
+                  <p className="mt-1 text-[0.95rem] font-semibold leading-5">
+                    {summary.latestDailyIncome}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/44">{summary.activeDays} entri</p>
+                  <p className="mt-1 text-[0.95rem] font-semibold leading-5">Rantai Valid</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-white/44">Model</p>
+                  <p className="mt-1 text-[0.95rem] font-semibold leading-5 capitalize">
+                    {summary.trendModel}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-3.5 border-t border-white/10 pt-3">
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-flex h-2.5 w-2.5 rounded-full ${
+                      summary.isDataSufficient ? "bg-emerald-300" : "bg-amber-300"
+                    }`}
+                  />
+                  <p className="text-[11px] font-semibold text-white/90">
+                    {summary.insightTitle}
+                  </p>
+                  <span className="text-[10px] font-medium text-white/52">
+                    {summary.confidenceLabel}
+                  </span>
+                </div>
+                <p className="mt-1.5 max-w-[30ch] text-[11px] leading-5 text-white/68">
+                  {summary.insightCopy}
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="py-1">
+              <DashboardEmptyState
+                description={error || "Ringkasan penghasilan belum bisa dimuat sekarang."}
+                icon="solar:chart-2-bold-duotone"
+                title="Ringkasan belum tersedia"
+                tone="error"
               />
-              <p className="text-[11px] font-semibold text-white/90">
-                {data.summary.insightTitle}
-              </p>
-              <span className="text-[10px] font-medium text-white/52">
-                {data.summary.confidenceLabel}
-              </span>
             </div>
-            <p className="mt-1.5 max-w-[30ch] text-[11px] leading-5 text-white/68">
-              {data.summary.insightCopy}
-            </p>
-          </div>
+          )}
         </section>
 
         <div className="grid grid-cols-[1fr_auto] gap-3 pt-3">
@@ -133,10 +136,21 @@ export function DashboardHomeView() {
         <section className="mt-3 rounded-[20px] border border-black/6 bg-white px-4 py-3 shadow-[0_10px_22px_rgba(23,23,56,0.04)]">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-secondary">Tren 30 Hari Terakhir</h3>
-            <span className="text-[11px] font-medium text-secondary/35">{data.summary.monthLabel}</span>
+            <span className="text-[11px] font-medium text-secondary/35">
+              {summary?.monthLabel || "Bulan ini"}
+            </span>
           </div>
           <div className="mt-1">
-            <DashboardLineChart data={data.trend} />
+            {trend.length > 0 ? (
+              <DashboardLineChart data={trend} />
+            ) : (
+              <DashboardEmptyState
+                description="Tren belum bisa ditampilkan sekarang."
+                icon="solar:graph-new-bold-duotone"
+                title="Grafik belum tersedia"
+                tone="error"
+              />
+            )}
           </div>
         </section>
 
@@ -144,9 +158,9 @@ export function DashboardHomeView() {
           <div className="pb-1">
             <h3 className="text-sm font-semibold text-secondary">Transaksi Terbaru</h3>
           </div>
-          {data.transactions.length > 0 ? (
+          {transactions.length > 0 ? (
             <div className="grid">
-              {data.transactions.map((transaction) => (
+              {transactions.map((transaction) => (
                 <article
                   className="flex items-center justify-between gap-3 border-t border-black/6 py-3.5 first:border-t-0"
                   key={transaction.id}
@@ -177,9 +191,14 @@ export function DashboardHomeView() {
             </div>
           ) : (
             <DashboardEmptyState
-              description="Transaksi pertama kamu akan muncul di sini setelah dicatat."
+              description={
+                error
+                  ? "Riwayat transaksi belum bisa dimuat sekarang."
+                  : "Transaksi pertama kamu akan muncul di sini setelah dicatat."
+              }
               icon="solar:bill-list-bold-duotone"
-              title="Belum ada transaksi"
+              title={error ? "Riwayat belum tersedia" : "Belum ada transaksi"}
+              tone={error ? "error" : "default"}
             />
           )}
         </section>

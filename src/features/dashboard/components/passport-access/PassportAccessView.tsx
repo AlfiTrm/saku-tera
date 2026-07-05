@@ -32,21 +32,6 @@ export function PassportAccessView() {
     return <DashboardScreenSkeleton />;
   }
 
-  if (error && activeEntries.length === 0 && otherEntries.length === 0) {
-    return (
-      <>
-        <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
-          <DashboardEmptyState
-            description={error}
-            icon="solar:danger-circle-bold-duotone"
-            title="Akses data belum bisa dimuat"
-          />
-        </main>
-        <AppBottomNav items={getDashboardNavItems("passport")} />
-      </>
-    );
-  }
-
   return (
     <>
       <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
@@ -92,9 +77,14 @@ export function PassportAccessView() {
             </div>
           ) : (
             <DashboardEmptyState
-              description="Belum ada organisasi yang sedang memegang akses aktif."
+              description={
+                error
+                  ? error
+                  : "Belum ada organisasi yang sedang memegang akses aktif."
+              }
               icon="solar:shield-user-bold-duotone"
-              title="Belum ada akses aktif"
+              title={error ? "Akses belum tersedia" : "Belum ada akses aktif"}
+              tone={error ? "error" : "default"}
             />
           )}
         </section>
@@ -115,6 +105,7 @@ export function PassportAccessView() {
         <div className="pt-4">
           <PressButton
             className="min-h-14 w-full justify-center gap-2 bg-tertiary text-base font-bold text-secondary hover:bg-tertiary/96"
+            disabled={organizations.length === 0}
             onClick={() => setIsGrantSheetOpen(true)}
             variant="secondary"
           >

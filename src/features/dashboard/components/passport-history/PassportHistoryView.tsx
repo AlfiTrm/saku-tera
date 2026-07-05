@@ -24,21 +24,6 @@ export function PassportHistoryView() {
     return <DashboardScreenSkeleton />;
   }
 
-  if (error && historyEntries.length === 0) {
-    return (
-      <>
-        <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
-          <DashboardEmptyState
-            description={error}
-            icon="solar:danger-circle-bold-duotone"
-            title="Riwayat akses belum bisa dimuat"
-          />
-        </main>
-        <AppBottomNav items={getDashboardNavItems("passport")} />
-      </>
-    );
-  }
-
   return (
     <>
       <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
@@ -90,9 +75,14 @@ export function PassportHistoryView() {
         ) : (
           <section className="mt-4">
             <DashboardEmptyState
-              description="Belum ada riwayat akses yang tercatat untuk filter ini."
+              description={
+                error
+                  ? error
+                  : "Belum ada riwayat akses yang tercatat untuk filter ini."
+              }
               icon="solar:clock-circle-bold-duotone"
-              title="Riwayat masih kosong"
+              title={error ? "Riwayat belum tersedia" : "Riwayat masih kosong"}
+              tone={error ? "error" : "default"}
             />
           </section>
         )}
