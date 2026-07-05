@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getDashboardPassportData,
   issueIncomePassport,
@@ -26,7 +26,7 @@ export function useDashboardPassportData() {
   });
   const [isIssuing, setIsIssuing] = useState(false);
 
-  async function load(period = selectedPeriod) {
+  const load = useCallback(async (period = selectedPeriod) => {
     try {
       setState((currentState) => ({
         ...currentState,
@@ -42,16 +42,16 @@ export function useDashboardPassportData() {
         isLoading: false,
       });
     } catch (error) {
-      setState({
-        data: null,
+      setState((currentState) => ({
+        data: currentState.data,
         error:
           error instanceof Error
             ? error.message
             : "Gagal memuat data passport.",
         isLoading: false,
-      });
+      }));
     }
-  }
+  }, [selectedPeriod]);
 
   async function handleIssuePassport() {
     if (isIssuing) {
@@ -98,14 +98,14 @@ export function useDashboardPassportData() {
           return;
         }
 
-        setState({
-          data: null,
+        setState((currentState) => ({
+          data: currentState.data,
           error:
             error instanceof Error
               ? error.message
               : "Gagal memuat data passport.",
           isLoading: false,
-        });
+        }));
       }
     }
 

@@ -1,3 +1,4 @@
+import { AuthSessionGuard } from "@/src/features/auth/components/AuthSessionGuard";
 import { InstalledAppGate } from "@/src/features/pwa/components/installed-app-gate";
 
 export default function DashboardLayout({
@@ -7,7 +8,10 @@ export default function DashboardLayout({
 }>) {
   return (
     <div className="min-h-screen bg-[#faf6ee] text-secondary">
-      <InstalledAppGate>{children}</InstalledAppGate>
+      <InstalledAppGate>
+        <AuthSessionGuard />
+        {children}
+      </InstalledAppGate>
     </div>
   );
 }
