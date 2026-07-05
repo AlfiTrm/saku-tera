@@ -9,7 +9,6 @@ type OnboardingShellProps = {
   description: string;
   footer?: ReactNode;
   showProgress?: boolean;
-  skipHref?: string;
   title: string;
   totalSteps?: number;
 };
@@ -21,29 +20,15 @@ export function OnboardingShell({
   description,
   footer,
   showProgress = true,
-  skipHref,
   title,
   totalSteps = 5,
 }: OnboardingShellProps) {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-5 pb-8 pt-4 text-secondary sm:px-6">
-      {showProgress || skipHref ? (
+    <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-5 pb-8 pt-4 text-secondary sm:px-6">
+      {showProgress ? (
         <div className="mb-4 flex min-h-8 items-center justify-between">
-          {showProgress ? (
-            <OnboardingProgress currentStep={currentStep} totalSteps={totalSteps} />
-          ) : (
-            <span />
-          )}
-          {skipHref ? (
-            <Link
-              className="min-h-11 px-1 text-sm font-semibold leading-[44px] text-secondary/45 transition-opacity hover:opacity-70"
-              href={skipHref}
-            >
-              Lewati
-            </Link>
-          ) : (
-            <span />
-          )}
+          <OnboardingProgress currentStep={currentStep} totalSteps={totalSteps} />
+          <span />
         </div>
       ) : null}
 

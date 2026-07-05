@@ -17,9 +17,11 @@ export function LandingNavbar() {
           <Link className="shrink-0" href="/">
             <Image
               alt="SakuTera"
+              className="h-auto w-[148px] sm:w-[164px]"
               height={34}
               priority
               src="/icons/sakutera-full.svg"
+              style={{ height: "auto" }}
               width={164}
             />
           </Link>
@@ -37,7 +39,7 @@ export function LandingNavbar() {
           </nav>
         </div>
 
-        <LandingInstallButton className="shrink-0 px-4 py-2 text-sm sm:px-5" />
+        <LandingInstallButton className="shrink-0 px-3 py-2 text-xs sm:px-5 sm:text-sm" />
       </Container>
     </header>
   );

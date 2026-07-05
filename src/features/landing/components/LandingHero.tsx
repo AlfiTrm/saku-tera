@@ -1,14 +1,17 @@
 import Link from "next/link";
 import { LandingInstallButton } from "@/src/features/landing/components/LandingInstallButton";
 import { Container } from "@/src/shared/components/layout/Container";
+import Image from "next/image";
 
 export function LandingHero() {
   return (
     <section className="relative overflow-hidden bg-primary text-white">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/landing/hero-bg.webp')" }}
+      <Image
+        src="/landing/hero-bg.webp"
+        alt=""
+        fill
+        className="absolute top-0 left-0 w-full h-full object-cover"
+        priority
       />
       <div
         aria-hidden="true"
@@ -22,7 +25,7 @@ export function LandingHero() {
       <Container className="relative py-16 sm:py-20 lg:py-24">
         <div className="grid gap-8 justify-items-center py-8 text-center lg:min-h-[35rem] lg:content-center">
           <div className="grid max-w-[46rem] gap-4 justify-items-center">
-            <h1 className="max-w-[10ch] text-[clamp(2.8rem,8vw,5.5rem)] font-bold leading-[0.94] tracking-[-0.06em]">
+            <h1 className="max-w-[11ch] text-[clamp(2.45rem,7vw,5.5rem)] font-bold leading-[0.96] tracking-[-0.06em] sm:leading-[0.94]">
               Catat, verifikasi, dan tunjukkan penghasilanmu.
             </h1>
             <p className="max-w-[32rem] text-[0.98rem] leading-7 text-white/82 sm:text-[1.05rem]">

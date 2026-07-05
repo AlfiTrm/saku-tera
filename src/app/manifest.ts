@@ -8,8 +8,9 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/onboard",
     scope: "/",
     display: "standalone",
-    background_color: "#f4efe6",
-    theme_color: "#171738",
+    orientation: "portrait",
+    background_color: "#fffdfa",
+    theme_color: "#fffdfa",
     icons: [
       {
         src: "/icons/android-chrome-192x192.png",
@@ -30,7 +31,6 @@ export default function manifest(): MetadataRoute.Manifest {
         src: "/icons/android-chrome-512x512.png",
         sizes: "512x512",
         type: "image/png",
-        purpose: "maskable",
       },
     ],
   };

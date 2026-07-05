@@ -44,7 +44,7 @@ export function LandingMobileGateModal({
 
         <div className="grid gap-3 rounded-[1.5rem] bg-primary/6 p-4 text-sm leading-6 text-secondary/78">
           <p>Pakai browser di ponsel untuk membuka Sakutera.</p>
-          <p>Tap Daftar Gratis lalu install app saat prompt muncul.</p>
+          <p>Tap Install PWA lalu install app saat prompt muncul.</p>
           <p>Setelah terpasang, kamu langsung masuk ke flow onboarding dan dashboard.</p>
         </div>
 

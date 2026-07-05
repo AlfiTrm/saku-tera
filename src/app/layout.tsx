@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ServiceWorkerRegistration } from "@/src/features/pwa/components/service-worker-registration";
 import "../shared/styles/globals.css";
 
@@ -31,6 +31,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#fffdfa",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -38,7 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className="h-full antialiased">
-      <body className="min-h-full bg-sand font-sans text-ink">
+      <body className="min-h-full overflow-x-hidden bg-sand font-sans text-ink">
         <ServiceWorkerRegistration />
         {children}
       </body>

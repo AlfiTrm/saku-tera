@@ -15,6 +15,12 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 type InstallPlatform = "ios" | "android" | "desktop";
+type InstallBrowser = "safari" | "chromium" | "other";
+type InstallExperience =
+  | "native-prompt"
+  | "ios-safari-manual"
+  | "ios-open-safari"
+  | "browser-menu-manual";
 
 function isStandaloneDisplay() {
   if (typeof window === "undefined") {
@@ -49,6 +55,28 @@ function detectPlatform(): InstallPlatform {
   return "desktop";
 }
 
+function detectBrowser(): InstallBrowser {
+  if (typeof navigator === "undefined") {
+    return "other";
+  }
+
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isSafari =
+    /safari/.test(userAgent) &&
+    !/crios|fxios|edgios|opios|mercury/.test(userAgent);
+  const isChromiumBrowser = /chrome|chromium|edg|opr|brave/.test(userAgent);
+
+  if (isSafari) {
+    return "safari";
+  }
+
+  if (isChromiumBrowser) {
+    return "chromium";
+  }
+
+  return "other";
+}
+
 function readInstalledState() {
   if (typeof window === "undefined") {
     return false;
@@ -66,6 +94,7 @@ export function useInstallPrompt() {
     useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(readInstalledState);
   const [platform, setPlatform] = useState<InstallPlatform>(detectPlatform);
+  const [browser, setBrowser] = useState<InstallBrowser>(detectBrowser);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(display-mode: standalone)");
@@ -75,6 +104,7 @@ export function useInstallPrompt() {
       promptEvent.preventDefault();
       setDeferredPrompt(promptEvent);
       setPlatform(detectPlatform());
+      setBrowser(detectBrowser());
     };
 
     const handleInstalled = () => {
@@ -90,6 +120,7 @@ export function useInstallPrompt() {
       }
       setIsInstalled(installed);
       setPlatform(detectPlatform());
+      setBrowser(detectBrowser());
     };
 
     window.addEventListener(
@@ -126,8 +157,20 @@ export function useInstallPrompt() {
     return choice;
   }
 
+  let installExperience: InstallExperience = "browser-menu-manual";
+
+  if (platform === "ios" && browser === "safari") {
+    installExperience = "ios-safari-manual";
+  } else if (platform === "ios") {
+    installExperience = "ios-open-safari";
+  } else if (deferredPrompt !== null) {
+    installExperience = "native-prompt";
+  }
+
   return {
+    browser,
     isInstalled,
+    installExperience,
     isPromptAvailable: deferredPrompt !== null,
     isStandaloneDisplay: isStandaloneDisplay(),
     platform,
