@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import PressButton from "@/src/shared/components/buttons/PressButton";
+import { OnboardingScreenSkeleton } from "@/src/features/onboarding/components/OnboardingScreenSkeleton";
 import { OnboardingShell } from "@/src/features/onboarding/components/OnboardingShell";
 import { WorkOptionCard } from "@/src/features/onboarding/components/WorkOptionCard";
 import {
@@ -110,7 +111,7 @@ export default function WorkPage() {
   }, [initialPlatformId, isHydrated]);
 
   if (!isHydrated) {
-    return null;
+    return <OnboardingScreenSkeleton />;
   }
 
   const primaryCategories = categories

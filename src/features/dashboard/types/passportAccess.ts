@@ -1,4 +1,10 @@
-export type PassportAccessStatus = "active" | "expiring";
+export type PassportAccessStatus =
+  | "active"
+  | "expiring"
+  | "revoked"
+  | "expired";
+
+export type PassportAccessScope = "emi" | "stability" | "risk" | "full";
 
 export type PassportAccessEntry = {
   badgeLabel: string;
@@ -9,5 +15,20 @@ export type PassportAccessEntry = {
   issuedText: string;
   metrics: string[];
   organization: string;
+  organizationType: string;
+  purpose?: string;
   showActions?: boolean;
+};
+
+export type PassportOrganization = {
+  id: string;
+  name: string;
+  type: string;
+};
+
+export type GrantPassportAccessPayload = {
+  dataScope: PassportAccessScope[];
+  expiresInDays: number;
+  organizationId: string;
+  purpose?: string;
 };

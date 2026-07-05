@@ -10,6 +10,7 @@ import {
   writeAuthSession,
 } from "@/src/features/auth/lib/auth-storage";
 import { setPin as submitPin } from "@/src/features/auth/services/authService";
+import { OnboardingScreenSkeleton } from "@/src/features/onboarding/components/OnboardingScreenSkeleton";
 import { OnboardingShell } from "@/src/features/onboarding/components/OnboardingShell";
 import { OtpInput } from "@/src/features/onboarding/components/OtpInput";
 import {
@@ -39,7 +40,7 @@ export default function PinPage() {
   }, [router]);
 
   if (!isHydrated) {
-    return null;
+    return <OnboardingScreenSkeleton />;
   }
 
   const draft = readOnboardingDraft();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { subscribeDashboardTransactionsUpdated } from "@/src/features/dashboard/lib/dashboard-events";
 import { getDashboardHomeData } from "@/src/features/dashboard/services/dashboardService";
 import type { DashboardHomeData } from "@/src/features/dashboard/types/dashboardData";
 
@@ -66,8 +67,17 @@ export function useDashboardHomeData() {
 
     void loadOnMount();
 
+    const unsubscribe = subscribeDashboardTransactionsUpdated(() => {
+      if (!isMounted) {
+        return;
+      }
+
+      void loadOnMount();
+    });
+
     return () => {
       isMounted = false;
+      unsubscribe();
     };
   }, []);
 

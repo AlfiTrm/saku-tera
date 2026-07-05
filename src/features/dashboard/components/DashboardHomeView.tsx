@@ -53,8 +53,8 @@ export function DashboardHomeView() {
           </button>
         </header>
 
-        <section className="overflow-hidden rounded-[24px] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_26%),linear-gradient(145deg,#4478d0_0%,#3c70ca_48%,#2858af_100%)] px-4 py-4 text-white shadow-[0_14px_34px_rgba(48,102,190,0.24)]">
-          <p className="text-[11px] font-semibold tracking-[-0.01em] text-white/72">
+        <section className="overflow-hidden rounded-[24px] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_24%),linear-gradient(145deg,#4478d0_0%,#3c70ca_48%,#2858af_100%)] px-4 py-4 text-white shadow-[0_14px_34px_rgba(48,102,190,0.24)]">
+          <p className="text-[11px] font-semibold tracking-[-0.01em] text-white/68">
             Estimasi gaji bulan ini
           </p>
           <h2 className="mt-1.5 text-[2.2rem] font-bold leading-none tracking-[-0.07em] sm:text-[2.45rem]">
@@ -62,31 +62,54 @@ export function DashboardHomeView() {
           </h2>
 
           <div className="mt-3 grid grid-cols-2 gap-2 text-[10px] font-semibold">
-            <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-emerald-200">
+            <div className="flex min-h-9 items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-emerald-200">
               <span className="rounded-full bg-emerald-400/16 px-1.5 py-0.5 text-[9px] text-emerald-100">
                 {data.summary.monthlyGrowth}
               </span>
-              <span className="text-white/76">vs bulan lalu</span>
+              <span className="text-white/72">vs bulan lalu</span>
             </div>
-            <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-emerald-200">
+            <div className="flex min-h-9 items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-emerald-200">
               <span className="h-2 w-2 rounded-full bg-emerald-300" />
               <span className="text-[9px] text-emerald-100">{data.summary.riskLabel}</span>
             </div>
           </div>
 
-          <div className="mt-3.5 grid grid-cols-2 gap-3 border-t border-white/10 pt-3.5 sm:grid-cols-3">
+          <div className="mt-3.5 grid grid-cols-3 gap-3 border-t border-white/10 pt-3.5">
             <div>
-              <p className="text-[10px] text-white/46">Hari ini</p>
-              <p className="mt-1 text-[0.96rem] font-semibold">{data.summary.latestDailyIncome}</p>
+              <p className="text-[10px] text-white/44">Hari ini</p>
+              <p className="mt-1 text-[0.95rem] font-semibold leading-5">
+                {data.summary.latestDailyIncome}
+              </p>
             </div>
             <div>
-              <p className="text-[10px] text-white/46">{data.summary.activeDays} entri</p>
-              <p className="mt-1 text-[0.96rem] font-semibold">Rantai Valid</p>
+              <p className="text-[10px] text-white/44">{data.summary.activeDays} entri</p>
+              <p className="mt-1 text-[0.95rem] font-semibold leading-5">Rantai Valid</p>
             </div>
-            <div className="col-span-2 sm:col-span-1">
-              <p className="text-[10px] text-white/46">Model</p>
-              <p className="mt-1 text-[0.92rem] font-semibold">{data.summary.trendModel}</p>
+            <div>
+              <p className="text-[10px] text-white/44">Model</p>
+              <p className="mt-1 text-[0.95rem] font-semibold leading-5 capitalize">
+                {data.summary.trendModel}
+              </p>
             </div>
+          </div>
+
+          <div className="mt-3.5 border-t border-white/10 pt-3">
+            <div className="flex items-center gap-2">
+              <span
+                className={`inline-flex h-2.5 w-2.5 rounded-full ${
+                  data.summary.isDataSufficient ? "bg-emerald-300" : "bg-amber-300"
+                }`}
+              />
+              <p className="text-[11px] font-semibold text-white/90">
+                {data.summary.insightTitle}
+              </p>
+              <span className="text-[10px] font-medium text-white/52">
+                {data.summary.confidenceLabel}
+              </span>
+            </div>
+            <p className="mt-1.5 max-w-[30ch] text-[11px] leading-5 text-white/68">
+              {data.summary.insightCopy}
+            </p>
           </div>
         </section>
 

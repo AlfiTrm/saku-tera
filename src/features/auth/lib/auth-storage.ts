@@ -110,3 +110,9 @@ export function clearPendingPinSetup() {
 
   window.localStorage.removeItem(AUTH_PENDING_PIN_SETUP_STORAGE_KEY);
 }
+
+export function clearAuthState() {
+  clearAuthSession();
+  clearPendingLoginPhone();
+  clearPendingPinSetup();
+}

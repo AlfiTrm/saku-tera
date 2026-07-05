@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import PressButton from "@/src/shared/components/buttons/PressButton";
 import { writeAuthSession } from "@/src/features/auth/lib/auth-storage";
 import { requestOtp, verifyOtp } from "@/src/features/auth/services/authService";
+import { OnboardingScreenSkeleton } from "@/src/features/onboarding/components/OnboardingScreenSkeleton";
 import { OnboardingShell } from "@/src/features/onboarding/components/OnboardingShell";
 import { OtpInput } from "@/src/features/onboarding/components/OtpInput";
 import {
@@ -61,7 +62,7 @@ export default function VerifyPage() {
   }, []);
 
   if (!isHydrated) {
-    return null;
+    return <OnboardingScreenSkeleton />;
   }
 
   function getNextRoute() {

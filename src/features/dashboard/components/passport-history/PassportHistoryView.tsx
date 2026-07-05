@@ -3,17 +3,40 @@
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { AppBottomNav } from "@/src/shared/components/navigation";
+import { DashboardEmptyState } from "@/src/features/dashboard/components/DashboardEmptyState";
+import { DashboardScreenSkeleton } from "@/src/features/dashboard/components/DashboardScreenSkeleton";
 import { PassportHistoryTimelineItem } from "@/src/features/dashboard/components/passport-history/PassportHistoryTimelineItem";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
-import { usePassportHistoryViewModel } from "@/src/features/dashboard/hooks/usePassportHistoryViewModel";
+import { usePassportHistoryData } from "@/src/features/dashboard/hooks/usePassportHistoryData";
 import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 
 export function PassportHistoryView() {
   const isHydrated = useDashboardHydrated();
-  const { filters, historyEntries } = usePassportHistoryViewModel();
+  const {
+    error,
+    filters,
+    historyEntries,
+    isLoading,
+    setSelectedFilter,
+  } = usePassportHistoryData();
 
-  if (!isHydrated) {
-    return null;
+  if (!isHydrated || isLoading) {
+    return <DashboardScreenSkeleton />;
+  }
+
+  if (error && historyEntries.length === 0) {
+    return (
+      <>
+        <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
+          <DashboardEmptyState
+            description={error}
+            icon="solar:danger-circle-bold-duotone"
+            title="Riwayat akses belum bisa dimuat"
+          />
+        </main>
+        <AppBottomNav items={getDashboardNavItems("passport")} />
+      </>
+    );
   }
 
   return (
@@ -45,6 +68,7 @@ export function PassportHistoryView() {
                     : "border-black/10 bg-white text-secondary/42"
                 }`}
                 key={filter.label}
+                onClick={() => setSelectedFilter(filter.value)}
                 type="button"
               >
                 {filter.label}
@@ -53,15 +77,25 @@ export function PassportHistoryView() {
           </div>
         </section>
 
-        <section className="mt-4 grid gap-0">
-          {historyEntries.map((entry, index) => (
-            <PassportHistoryTimelineItem
-              entry={entry}
-              isLast={index === historyEntries.length - 1}
-              key={entry.id}
+        {historyEntries.length > 0 ? (
+          <section className="mt-4 grid gap-0">
+            {historyEntries.map((entry, index) => (
+              <PassportHistoryTimelineItem
+                entry={entry}
+                isLast={index === historyEntries.length - 1}
+                key={entry.id}
+              />
+            ))}
+          </section>
+        ) : (
+          <section className="mt-4">
+            <DashboardEmptyState
+              description="Belum ada riwayat akses yang tercatat untuk filter ini."
+              icon="solar:clock-circle-bold-duotone"
+              title="Riwayat masih kosong"
             />
-          ))}
-        </section>
+          </section>
+        )}
       </main>
 
       <AppBottomNav items={getDashboardNavItems("passport")} />

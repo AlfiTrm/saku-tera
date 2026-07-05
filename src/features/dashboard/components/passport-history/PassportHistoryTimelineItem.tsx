@@ -58,8 +58,21 @@ export function PassportHistoryTimelineItem({
           </span>
         </div>
 
+        {entry.metrics.length > 0 ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {entry.metrics.map((metric) => (
+              <span
+                className="rounded-lg bg-primary/[0.06] px-2.5 py-1 text-[10px] font-semibold text-primary"
+                key={metric}
+              >
+                {metric}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
         <p
-          className={`mt-4 text-sm font-medium ${
+          className={`mt-4 text-sm font-medium leading-6 ${
             isValid ? "text-secondary/42" : "text-secondary/30"
           }`}
         >

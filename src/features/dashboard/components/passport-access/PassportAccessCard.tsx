@@ -6,10 +6,17 @@ import type { PassportAccessEntry } from "@/src/features/dashboard/types/passpor
 
 type PassportAccessCardProps = {
   entry: PassportAccessEntry;
+  isRevoking?: boolean;
+  onRevoke?: (consentId: string) => void;
 };
 
-export function PassportAccessCard({ entry }: PassportAccessCardProps) {
-  const isActive = entry.badgeTone === "active";
+export function PassportAccessCard({
+  entry,
+  isRevoking = false,
+  onRevoke,
+}: PassportAccessCardProps) {
+  const isActive =
+    entry.badgeTone === "active" || entry.badgeTone === "expiring";
 
   return (
     <article className="rounded-[20px] border border-black/6 bg-white px-4 py-3 shadow-[0_10px_22px_rgba(23,23,56,0.04)]">
@@ -52,21 +59,24 @@ export function PassportAccessCard({ entry }: PassportAccessCardProps) {
         </div>
       ) : null}
 
+      {entry.purpose ? (
+        <p className="mt-3 text-sm leading-6 text-secondary/46">{entry.purpose}</p>
+      ) : null}
+
       <div className="mt-3 flex items-center gap-2 border-t border-black/6 pt-2.5 text-[11px] font-medium text-secondary/35">
         <Icon className="h-3.5 w-3.5 shrink-0" icon="solar:clock-circle-linear" />
         <span className="truncate">{entry.expiresText}</span>
       </div>
 
-      {entry.showActions ? (
-        <div className="mt-3 grid grid-cols-2 gap-3">
+      {entry.showActions && onRevoke ? (
+        <div className="mt-3">
           <PressButton
             className="min-h-12 w-full justify-center border border-[#ffb5b5] bg-[#fff4f4] text-[#f05c5c] shadow-none hover:bg-[#fff1f1]"
+            disabled={isRevoking}
+            onClick={() => onRevoke(entry.id)}
             variant="outline"
           >
-            Cabut Akses
-          </PressButton>
-          <PressButton className="min-h-12 w-full justify-center" variant="outline">
-            Detail
+            {isRevoking ? "Mencabut..." : "Cabut Akses"}
           </PressButton>
         </div>
       ) : null}

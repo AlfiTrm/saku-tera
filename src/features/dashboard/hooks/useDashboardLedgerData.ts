@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { subscribeDashboardTransactionsUpdated } from "@/src/features/dashboard/lib/dashboard-events";
 import { getDashboardLedgerData } from "@/src/features/dashboard/services/dashboardService";
 import type {
   DashboardLedgerData,
@@ -83,8 +84,17 @@ export function useDashboardLedgerData() {
 
     void loadOnMount();
 
+    const unsubscribe = subscribeDashboardTransactionsUpdated(() => {
+      if (!isMounted) {
+        return;
+      }
+
+      void loadOnMount();
+    });
+
     return () => {
       isMounted = false;
+      unsubscribe();
     };
   }, [selectedPeriod, selectedSourceId]);
 
