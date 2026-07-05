@@ -155,21 +155,7 @@ export function DashboardPassportView() {
   if (!isHydrated || isLoading) {
     return <DashboardScreenSkeleton />;
   }
-
-  if (!data) {
-    return (
-      <>
-        <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-3 pb-28 pt-3">
-          <DashboardEmptyState
-            description={error || "Coba muat ulang beberapa saat lagi."}
-            icon="solar:danger-circle-bold-duotone"
-            title="Passport belum bisa dimuat"
-          />
-        </main>
-        <AppBottomNav items={getDashboardNavItems("passport")} />
-      </>
-    );
-  }
+  const safeData = data;
 
   return (
     <>
@@ -188,7 +174,7 @@ export function DashboardPassportView() {
             <div>
               <p className="text-[11px] font-semibold text-white/68">Status kelayakan</p>
               <h2 className="mt-1.5 text-[1.55rem] font-bold leading-tight tracking-[-0.04em]">
-                {data.summary.headline}
+                {safeData?.summary.headline || "Status passport belum tersedia"}
               </h2>
             </div>
             <span className="inline-flex h-11 w-11 items-center justify-center text-emerald-200">
@@ -198,16 +184,23 @@ export function DashboardPassportView() {
 
           <div className="mt-4">
             <div className="flex items-center justify-between gap-3 text-[10px] font-semibold text-white/76 sm:text-[11px]">
-              <span>{data.summary.activeDaysLabel}</span>
-              <span className="shrink-0">{data.summary.progressValueLabel}</span>
+              <span>{safeData?.summary.activeDaysLabel || "Data aktif"}</span>
+              <span className="shrink-0">
+                {safeData?.summary.progressValueLabel || "Data belum terbaca"}
+              </span>
             </div>
             <div className="mt-2 h-2 rounded-full bg-white/18">
               <div
                 className="h-2 rounded-full bg-emerald-300"
-                style={{ width: `${Math.round(data.summary.progressRatio * 100)}%` }}
+                style={{
+                  width: `${Math.round((safeData?.summary.progressRatio ?? 0) * 100)}%`,
+                }}
               />
             </div>
-            <p className="mt-2 text-xs text-white/64">{data.summary.supportingCopy}</p>
+            <p className="mt-2 text-xs text-white/64">
+              {safeData?.summary.supportingCopy ||
+                "Cek lagi nanti setelah data passport berhasil dimuat."}
+            </p>
           </div>
         </section>
 
@@ -216,7 +209,7 @@ export function DashboardPassportView() {
             <h3 className="text-sm font-semibold text-secondary">Passport Aktif</h3>
           </div>
 
-          {data.activePassport ? (
+          {safeData?.activePassport ? (
             <article className="overflow-hidden rounded-[22px] border border-black/6 bg-white shadow-[0_12px_24px_rgba(23,23,56,0.05)]">
               <div className="flex items-center justify-between bg-secondary px-4 py-3 text-white">
                 <div className="flex items-center gap-2">
@@ -224,12 +217,12 @@ export function DashboardPassportView() {
                     <Icon className="h-4 w-4" icon="solar:shield-check-bold" />
                   </span>
                   <div>
-                    <p className="text-sm font-semibold">{data.activePassport.issuerLabel}</p>
+                    <p className="text-sm font-semibold">{safeData.activePassport.issuerLabel}</p>
                     <p className="text-[11px] text-white/54">income passport</p>
                   </div>
                 </div>
                 <span className="rounded-full border border-emerald-400/24 px-2.5 py-1 text-[10px] font-semibold text-emerald-300">
-                  {data.activePassport.statusLabel}
+                  {safeData.activePassport.statusLabel}
                 </span>
               </div>
 
@@ -238,25 +231,25 @@ export function DashboardPassportView() {
                   <article>
                     <p className="text-[11px] font-medium text-secondary/32">EMI</p>
                     <p className="mt-1 text-[1.55rem] font-bold tracking-[-0.04em] text-secondary">
-                      {data.activePassport.emi}
+                      {safeData.activePassport.emi}
                     </p>
                   </article>
                   <article>
                     <p className="text-[11px] font-medium text-secondary/32">Periode</p>
                     <p className="mt-1 text-[1rem] font-bold text-secondary">
-                      {data.activePassport.periodLabel}
+                      {safeData.activePassport.periodLabel}
                     </p>
                   </article>
                   <article>
                     <p className="text-[11px] font-medium text-secondary/32">Risiko</p>
                     <p className="mt-1 text-[1rem] font-bold text-emerald-600">
-                      {data.activePassport.riskLabel}
+                      {safeData.activePassport.riskLabel}
                     </p>
                   </article>
                   <article>
                     <p className="text-[11px] font-medium text-secondary/32">Diterbitkan</p>
                     <p className="mt-1 text-[1rem] font-bold text-secondary">
-                      {data.activePassport.issuedAt}
+                      {safeData.activePassport.issuedAt}
                     </p>
                   </article>
                 </div>
@@ -264,7 +257,7 @@ export function DashboardPassportView() {
                 <article className="rounded-[18px] bg-secondary/[0.03] px-4 py-3">
                   <p className="text-[11px] font-medium text-secondary/32">Kode Unik Verifikasi</p>
                   <p className="mt-1 break-all text-sm font-semibold tracking-[0.04em] text-secondary">
-                    {data.activePassport.verificationCode}
+                    {safeData.activePassport.verificationCode}
                   </p>
                 </article>
 
@@ -287,16 +280,21 @@ export function DashboardPassportView() {
               action={
                 <PressButton
                   className="px-4 py-2 text-sm"
-                  disabled={!data.summary.isEligible}
+                  disabled={!safeData?.summary.isEligible}
                   onClick={() => setIsIssueSheetOpen(true)}
                   variant="primary"
                 >
                   Terbitkan Sekarang
                 </PressButton>
               }
-              description="Terbitkan passport pertama setelah data penghasilanmu cukup stabil."
+              description={
+                error
+                  ? error
+                  : "Terbitkan passport pertama setelah data penghasilanmu cukup stabil."
+              }
               icon="solar:wallet-money-bold-duotone"
-              title="Belum ada passport aktif"
+              title={error ? "Passport belum tersedia" : "Belum ada passport aktif"}
+              tone={error ? "error" : "default"}
             />
           )}
         </section>
@@ -304,7 +302,7 @@ export function DashboardPassportView() {
         <div className="pt-4">
           <PressButton
             className="min-h-14 w-full justify-center gap-2 bg-tertiary text-base font-bold text-secondary hover:bg-tertiary/96"
-            disabled={!data.summary.isEligible}
+            disabled={!safeData?.summary.isEligible}
             onClick={() => setIsIssueSheetOpen(true)}
             variant="secondary"
           >
@@ -318,7 +316,7 @@ export function DashboardPassportView() {
       <PassportIssueSheet
         isOpen={isIssueSheetOpen}
         isSubmitting={isIssuing}
-        metrics={data.metrics}
+        metrics={safeData?.metrics ?? []}
         onClose={() => setIsIssueSheetOpen(false)}
         onIssue={() => {
           void issuePassport().then((isSuccess) => {
@@ -328,7 +326,7 @@ export function DashboardPassportView() {
           });
         }}
         onSelectPeriod={setSelectedPeriod}
-        periods={data.issuePeriods}
+        periods={safeData?.issuePeriods ?? []}
       />
     </>
   );

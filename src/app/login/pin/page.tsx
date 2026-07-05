@@ -11,6 +11,7 @@ import {
 } from "@/src/features/auth/lib/auth-storage";
 import { loginWithPin } from "@/src/features/auth/services/authService";
 import { OtpInput } from "@/src/features/onboarding/components/OtpInput";
+import { OnboardingScreenSkeleton } from "@/src/features/onboarding/components/OnboardingScreenSkeleton";
 import { OnboardingShell } from "@/src/features/onboarding/components/OnboardingShell";
 
 function subscribe() {
@@ -36,7 +37,7 @@ export default function LoginPinPage() {
   }, [router]);
 
   if (!isHydrated) {
-    return null;
+    return <OnboardingScreenSkeleton />;
   }
 
   const canContinue = pin.length === 6;

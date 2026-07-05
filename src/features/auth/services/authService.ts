@@ -8,7 +8,7 @@ import type {
   OtpVerificationResult,
   SetPinPayload,
 } from "@/src/features/auth/types/auth";
-import { apiRequest, normalizePhoneNumber } from "@/src/shared/lib/api";
+import { ApiError, apiRequest, normalizePhoneNumber } from "@/src/shared/lib/api";
 
 type RegisterResponseData = {
   message: string;
@@ -34,6 +34,10 @@ type SetPinResponseData = {
 type LoginResponseData = {
   message: string;
   token: string;
+};
+
+type LogoutResponseData = {
+  message: string;
 };
 
 export async function requestOtp(payload: OtpRequestPayload): Promise<OtpRequestResult> {
@@ -142,4 +146,27 @@ export async function loginWithPin(payload: LoginPayload) {
       accessToken: response.data.token,
     },
   };
+}
+
+export async function logout(accessToken: string) {
+  try {
+    const response = await apiRequest<LogoutResponseData>("/auth/logout", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      method: "POST",
+    });
+
+    return {
+      message: response.message,
+    };
+  } catch (error) {
+    if (error instanceof ApiError && error.code === 401) {
+      return {
+        message: error.message,
+      };
+    }
+
+    throw error;
+  }
 }

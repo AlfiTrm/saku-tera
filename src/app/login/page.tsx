@@ -12,6 +12,7 @@ import {
 } from "@/src/features/auth/lib/auth-storage";
 import { checkPhone } from "@/src/features/auth/services/authService";
 import { PhoneNumberField } from "@/src/features/onboarding/components/PhoneNumberField";
+import { OnboardingScreenSkeleton } from "@/src/features/onboarding/components/OnboardingScreenSkeleton";
 import { OnboardingShell } from "@/src/features/onboarding/components/OnboardingShell";
 
 function subscribe() {
@@ -26,7 +27,7 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isHydrated) {
-    return null;
+    return <OnboardingScreenSkeleton />;
   }
 
   const canContinue = phone.trim().length >= 10;

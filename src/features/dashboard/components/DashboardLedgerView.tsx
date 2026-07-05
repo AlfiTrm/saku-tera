@@ -22,23 +22,22 @@ export function DashboardLedgerView() {
   if (!isHydrated || isLoading) {
     return <DashboardScreenSkeleton />;
   }
+  const safeData =
+    data ??
+    ({
+      entries: [],
+      filters: [
+        { active: true, id: "all", label: "Semua" },
+        { active: false, id: "bulan_ini", label: "Bulan Ini" },
+        { active: false, id: "3_bulan", label: "3 Bulan" },
+      ],
+      integrityLabel: "Data belum tersedia / Ledger belum terbaca",
+      selectedPeriod: "all",
+      selectedSourceId: "",
+      sourceOptions: [],
+    } as const);
 
-  if (!data) {
-    return (
-      <>
-        <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-3 pb-28 pt-3">
-          <DashboardEmptyState
-            description={error || "Coba muat ulang beberapa saat lagi."}
-            icon="solar:danger-circle-bold-duotone"
-            title="Ledger belum bisa dimuat"
-          />
-        </main>
-        <AppBottomNav items={getDashboardNavItems("ledger")} />
-      </>
-    );
-  }
-
-  const [integrityCount, integrityStatus] = data.integrityLabel.split(" / ");
+  const [integrityCount, integrityStatus] = safeData.integrityLabel.split(" / ");
 
   return (
     <>
@@ -59,7 +58,7 @@ export function DashboardLedgerView() {
 
         <section className="px-1">
           <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {data.filters.map((filter) => (
+            {safeData.filters.map((filter) => (
               <button
                 className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
                   filter.active
@@ -89,7 +88,7 @@ export function DashboardLedgerView() {
             >
               Semua sumber
             </button>
-            {data.sourceOptions.map((source) => (
+            {safeData.sourceOptions.map((source) => (
               <button
                 className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
                   selectedSourceId === source.id
@@ -107,8 +106,8 @@ export function DashboardLedgerView() {
         </section>
 
         <section className="mt-4 grid gap-3">
-          {data.entries.length > 0 ? (
-            data.entries.map((entry) => (
+          {safeData.entries.length > 0 ? (
+            safeData.entries.map((entry) => (
               <article
                 className="rounded-[20px] border border-black/6 bg-white px-4 py-3 shadow-[0_10px_22px_rgba(23,23,56,0.04)]"
                 key={entry.id}
@@ -146,9 +145,14 @@ export function DashboardLedgerView() {
             ))
           ) : (
             <DashboardEmptyState
-              description="Ledger akan terisi begitu kamu mulai mencatat penghasilan."
+              description={
+                error
+                  ? error
+                  : "Ledger akan terisi begitu kamu mulai mencatat penghasilan."
+              }
               icon="solar:clipboard-list-bold-duotone"
-              title="Ledger masih kosong"
+              title={error ? "Ledger belum tersedia" : "Ledger masih kosong"}
+              tone={error ? "error" : "default"}
             />
           )}
         </section>

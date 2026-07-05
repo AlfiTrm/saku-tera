@@ -240,6 +240,78 @@ function formatTrendChange(percentage: number) {
   })}%`;
 }
 
+function formatConfidenceLabel(confidence?: string) {
+  if (confidence === "high") {
+    return "Keyakinan tinggi";
+  }
+
+  if (confidence === "medium") {
+    return "Keyakinan menengah";
+  }
+
+  if (confidence === "low") {
+    return "Keyakinan awal";
+  }
+
+  return "Belum ada prediksi";
+}
+
+function createForecastInsight(response: HomeResponse["data"]) {
+  const forecast = response.forecast;
+
+  if (!forecast) {
+    return {
+      confidenceLabel: "Belum ada prediksi",
+      insightCopy: "Mulai catat penghasilan harian supaya Sakutera bisa membaca pola pemasukanmu.",
+      insightTitle: "Belum ada estimasi",
+      isDataSufficient: false,
+    };
+  }
+
+  if (!forecast.is_data_sufficient) {
+    return {
+      confidenceLabel: formatConfidenceLabel(forecast.confidence),
+      insightCopy: `Baru terbaca dari ${forecast.days_of_data} hari dan ${forecast.transaction_count} transaksi. Lanjut catat dulu untuk hasil yang lebih stabil.`,
+      insightTitle: "Estimasi masih awal",
+      isDataSufficient: false,
+    };
+  }
+
+  if (forecast.confidence === "low") {
+    return {
+      confidenceLabel: formatConfidenceLabel(forecast.confidence),
+      insightCopy: `Pola pemasukanmu sudah mulai terbaca, tapi model masih butuh data tambahan agar proyeksinya lebih yakin.`,
+      insightTitle: "Prediksi mulai terbentuk",
+      isDataSufficient: true,
+    };
+  }
+
+  if (forecast.trend_direction === "up") {
+    return {
+      confidenceLabel: formatConfidenceLabel(forecast.confidence),
+      insightCopy: "Pola pemasukanmu sedang menguat. Jaga konsistensi pencatatan supaya proyeksinya tetap akurat.",
+      insightTitle: "Tren penghasilan naik",
+      isDataSufficient: true,
+    };
+  }
+
+  if (forecast.trend_direction === "down") {
+    return {
+      confidenceLabel: formatConfidenceLabel(forecast.confidence),
+      insightCopy: "Pemasukanmu sedang lebih fluktuatif. Catatan rutin akan bantu baca risiko dengan lebih presisi.",
+      insightTitle: "Tren penghasilan melambat",
+      isDataSufficient: true,
+    };
+  }
+
+  return {
+    confidenceLabel: formatConfidenceLabel(forecast.confidence),
+    insightCopy: "Pola pemasukanmu terlihat cukup stabil. Teruskan pencatatan rutin untuk menjaga kualitas prediksi.",
+    insightTitle: "Pola penghasilan stabil",
+    isDataSufficient: true,
+  };
+}
+
 function formatMonthLabel(dateString: string) {
   return new Intl.DateTimeFormat("id-ID", {
     month: "short",
@@ -292,12 +364,17 @@ function mapTransactionIcon(sourceName: string, sourceProvider: string) {
 
 function mapSummary(response: HomeResponse["data"]): DashboardSummary {
   const forecast = response.forecast;
+  const forecastInsight = createForecastInsight(response);
 
   return {
     activeDays: forecast?.days_of_data ?? 0,
     activeDaysMinimum: 30,
+    confidenceLabel: forecastInsight.confidenceLabel,
     estimatedMonthlyIncome: formatCurrency(forecast?.forecast_total ?? 0),
     hasForecast: Boolean(forecast),
+    insightCopy: forecastInsight.insightCopy,
+    insightTitle: forecastInsight.insightTitle,
+    isDataSufficient: forecastInsight.isDataSufficient,
     latestDailyIncome: formatCurrency(response.today_income),
     monthLabel:
       response.trend_data.at(-1)?.date

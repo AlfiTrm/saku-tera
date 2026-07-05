@@ -1,8 +1,12 @@
 export type DashboardSummary = {
   activeDays: number;
   activeDaysMinimum: number;
+  confidenceLabel: string;
   estimatedMonthlyIncome: string;
   hasForecast: boolean;
+  insightCopy: string;
+  insightTitle: string;
+  isDataSufficient: boolean;
   latestDailyIncome: string;
   monthLabel: string;
   monthlyGrowth: string;

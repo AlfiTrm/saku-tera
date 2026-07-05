@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { subscribeDashboardTransactionsUpdated } from "@/src/features/dashboard/lib/dashboard-events";
 import { getDashboardHomeData } from "@/src/features/dashboard/services/dashboardService";
 import type { DashboardHomeData } from "@/src/features/dashboard/types/dashboardData";
 
@@ -17,8 +18,14 @@ export function useDashboardHomeData() {
     isLoading: true,
   });
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
+      setState((currentState) => ({
+        ...currentState,
+        error: null,
+        isLoading: true,
+      }));
+
       const data = await getDashboardHomeData();
 
       setState({
@@ -27,13 +34,13 @@ export function useDashboardHomeData() {
         isLoading: false,
       });
     } catch {
-      setState({
-        data: null,
+      setState((currentState) => ({
+        data: currentState.data,
         error: "Gagal memuat ringkasan dashboard.",
         isLoading: false,
-      });
+      }));
     }
-  }
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -56,18 +63,27 @@ export function useDashboardHomeData() {
           return;
         }
 
-        setState({
-          data: null,
+        setState((currentState) => ({
+          data: currentState.data,
           error: "Gagal memuat ringkasan dashboard.",
           isLoading: false,
-        });
+        }));
       }
     }
 
     void loadOnMount();
 
+    const unsubscribe = subscribeDashboardTransactionsUpdated(() => {
+      if (!isMounted) {
+        return;
+      }
+
+      void loadOnMount();
+    });
+
     return () => {
       isMounted = false;
+      unsubscribe();
     };
   }, []);
 

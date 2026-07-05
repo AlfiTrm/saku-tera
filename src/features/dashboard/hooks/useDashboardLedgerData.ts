@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { subscribeDashboardTransactionsUpdated } from "@/src/features/dashboard/lib/dashboard-events";
 import { getDashboardLedgerData } from "@/src/features/dashboard/services/dashboardService";
 import type {
   DashboardLedgerData,
@@ -22,7 +23,7 @@ export function useDashboardLedgerData() {
     isLoading: true,
   });
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setState((currentState) => ({
         ...currentState,
@@ -41,13 +42,13 @@ export function useDashboardLedgerData() {
         isLoading: false,
       });
     } catch {
-      setState({
-        data: null,
+      setState((currentState) => ({
+        data: currentState.data,
         error: "Gagal memuat data ledger.",
         isLoading: false,
-      });
+      }));
     }
-  }
+  }, [selectedPeriod, selectedSourceId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -73,18 +74,27 @@ export function useDashboardLedgerData() {
           return;
         }
 
-        setState({
-          data: null,
+        setState((currentState) => ({
+          data: currentState.data,
           error: "Gagal memuat data ledger.",
           isLoading: false,
-        });
+        }));
       }
     }
 
     void loadOnMount();
 
+    const unsubscribe = subscribeDashboardTransactionsUpdated(() => {
+      if (!isMounted) {
+        return;
+      }
+
+      void loadOnMount();
+    });
+
     return () => {
       isMounted = false;
+      unsubscribe();
     };
   }, [selectedPeriod, selectedSourceId]);
 

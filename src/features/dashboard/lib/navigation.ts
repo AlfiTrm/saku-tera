@@ -21,7 +21,7 @@ export function getDashboardNavItems(activeTab: DashboardTab) {
       label: "Passport",
     },
     {
-      href: "/dashboard",
+      href: "/dashboard/account",
       icon: "solar:user-rounded-bold-duotone",
       isActive: activeTab === "profile",
       label: "Profil",

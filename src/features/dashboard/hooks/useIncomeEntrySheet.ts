@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { notifyDashboardTransactionsUpdated } from "@/src/features/dashboard/lib/dashboard-events";
 import {
   extractIncomeDocument,
   submitIncomeEntry,
@@ -137,6 +138,7 @@ export function useIncomeEntrySheet({
         transactionDate: getTodayDate(),
       });
 
+      notifyDashboardTransactionsUpdated();
       await onSuccess();
       resetForm();
       onClose();

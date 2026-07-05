@@ -3,17 +3,25 @@
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { AppBottomNav } from "@/src/shared/components/navigation";
+import { DashboardEmptyState } from "@/src/features/dashboard/components/DashboardEmptyState";
+import { DashboardScreenSkeleton } from "@/src/features/dashboard/components/DashboardScreenSkeleton";
 import { PassportHistoryTimelineItem } from "@/src/features/dashboard/components/passport-history/PassportHistoryTimelineItem";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
-import { usePassportHistoryViewModel } from "@/src/features/dashboard/hooks/usePassportHistoryViewModel";
+import { usePassportHistoryData } from "@/src/features/dashboard/hooks/usePassportHistoryData";
 import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 
 export function PassportHistoryView() {
   const isHydrated = useDashboardHydrated();
-  const { filters, historyEntries } = usePassportHistoryViewModel();
+  const {
+    error,
+    filters,
+    historyEntries,
+    isLoading,
+    setSelectedFilter,
+  } = usePassportHistoryData();
 
-  if (!isHydrated) {
-    return null;
+  if (!isHydrated || isLoading) {
+    return <DashboardScreenSkeleton />;
   }
 
   return (
@@ -45,6 +53,7 @@ export function PassportHistoryView() {
                     : "border-black/10 bg-white text-secondary/42"
                 }`}
                 key={filter.label}
+                onClick={() => setSelectedFilter(filter.value)}
                 type="button"
               >
                 {filter.label}
@@ -53,15 +62,30 @@ export function PassportHistoryView() {
           </div>
         </section>
 
-        <section className="mt-4 grid gap-0">
-          {historyEntries.map((entry, index) => (
-            <PassportHistoryTimelineItem
-              entry={entry}
-              isLast={index === historyEntries.length - 1}
-              key={entry.id}
+        {historyEntries.length > 0 ? (
+          <section className="mt-4 grid gap-0">
+            {historyEntries.map((entry, index) => (
+              <PassportHistoryTimelineItem
+                entry={entry}
+                isLast={index === historyEntries.length - 1}
+                key={entry.id}
+              />
+            ))}
+          </section>
+        ) : (
+          <section className="mt-4">
+            <DashboardEmptyState
+              description={
+                error
+                  ? error
+                  : "Belum ada riwayat akses yang tercatat untuk filter ini."
+              }
+              icon="solar:clock-circle-bold-duotone"
+              title={error ? "Riwayat belum tersedia" : "Riwayat masih kosong"}
+              tone={error ? "error" : "default"}
             />
-          ))}
-        </section>
+          </section>
+        )}
       </main>
 
       <AppBottomNav items={getDashboardNavItems("passport")} />

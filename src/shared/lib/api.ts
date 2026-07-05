@@ -1,3 +1,5 @@
+import { notifyAuthInvalidated } from "@/src/features/auth/lib/auth-events";
+
 type ApiStatus = {
   code: number;
   isSuccess: boolean;
@@ -62,10 +64,16 @@ export async function apiRequest<TData>(
   const payload = (await response.json().catch(() => null)) as ApiEnvelope<TData> | null;
 
   if (!response.ok || !payload?.status?.isSuccess) {
-    throw new ApiError(
+    const error = new ApiError(
       payload?.message || "Terjadi kesalahan saat menghubungi server.",
       payload?.status?.code || response.status || 500,
     );
+
+    if (error.code === 401) {
+      notifyAuthInvalidated();
+    }
+
+    throw error;
   }
 
   return payload;
