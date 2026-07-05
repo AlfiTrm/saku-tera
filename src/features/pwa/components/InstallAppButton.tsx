@@ -9,10 +9,15 @@ import { useInstallPrompt } from "@/src/features/pwa/hooks/useInstallPrompt";
 export function InstallAppButton() {
   const router = useRouter();
   const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
-  const { isInstalled, isPromptAvailable, isStandaloneDisplay, platform, promptInstall } =
-    useInstallPrompt();
+  const {
+    installExperience,
+    isInstalled,
+    isStandaloneDisplay,
+    platform,
+    promptInstall,
+  } = useInstallPrompt();
 
-  const label = isInstalled ? "Buka App" : "Daftar Gratis";
+  const label = isInstalled ? "Buka App" : "Install PWA";
 
   async function handleClick() {
     if (isInstalled && isStandaloneDisplay) {
@@ -20,7 +25,7 @@ export function InstallAppButton() {
       return;
     }
 
-    if (isPromptAvailable) {
+    if (installExperience === "native-prompt") {
       const choice = await promptInstall();
       if (choice?.outcome === "dismissed") {
         setIsInstructionsOpen(true);
@@ -44,6 +49,7 @@ export function InstallAppButton() {
       {isInstructionsOpen ? (
         <InstallInstructions
           isInstalled={isInstalled}
+          mode={installExperience === "ios-open-safari" ? "ios-open-safari" : "platform"}
           onClose={() => setIsInstructionsOpen(false)}
           platform={platform}
         />

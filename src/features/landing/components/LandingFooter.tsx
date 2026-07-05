@@ -16,8 +16,10 @@ export function LandingFooter() {
           <Link className="w-fit" href="/">
             <Image
               alt="SakuTera"
+              className="h-auto w-[144px]"
               height={32}
               src="/icons/sakutera-full.svg"
+              style={{ height: "auto" }}
               width={154}
             />
           </Link>
