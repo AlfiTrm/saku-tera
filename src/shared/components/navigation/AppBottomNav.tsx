@@ -16,7 +16,7 @@ type AppBottomNavProps = {
 
 export function AppBottomNav({ items }: AppBottomNavProps) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto w-full max-w-[29rem] rounded-t-[1.8rem] border-t border-black/6 bg-[#fffdf8]/96 px-3 pb-[calc(0.65rem+env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_30px_rgba(23,23,56,0.08)] backdrop-blur-sm">
+    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto box-border w-full max-w-[29rem] rounded-t-[1.8rem] border-t border-black/6 bg-[#fffdf8]/96 px-3 pb-[calc(0.65rem+env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-10px_30px_rgba(23,23,56,0.08)] backdrop-blur-sm">
       <ul className="grid grid-cols-4 gap-2">
         {items.map((item) => (
           <li key={item.label}>
