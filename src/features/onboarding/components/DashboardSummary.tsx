@@ -21,6 +21,7 @@ const workLabels = {
 
 const sourceLabels = {
   "": "Belum dipilih",
+  ewallet: "Hubungkan GoPay / OVO",
   manual: "Input Manual",
   platform: "Hubungkan GoPay / OVO",
 };
@@ -61,15 +62,16 @@ export function DashboardSummary() {
         <article className="rounded-[18px] border border-white/8 bg-white/6 px-4 py-4">
           <p className="text-sm text-white/50">Jenis pekerjaan</p>
           <p className="mt-1 text-lg font-semibold">
-            {draft.workType === "other" && draft.workOther
-              ? draft.workOther
-              : workLabels[draft.workType]}
+            {draft.workLabel ||
+              (draft.workType === "other" && draft.workOther
+                ? draft.workOther
+                : workLabels[draft.workType])}
           </p>
         </article>
         <article className="rounded-[18px] border border-white/8 bg-white/6 px-4 py-4">
           <p className="text-sm text-white/50">Sumber penghasilan</p>
           <p className="mt-1 text-lg font-semibold">
-            {sourceLabels[draft.incomeSource]}
+            {draft.incomeSourceLabel || sourceLabels[draft.incomeSource]}
           </p>
         </article>
       </div>

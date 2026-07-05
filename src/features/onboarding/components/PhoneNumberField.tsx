@@ -140,8 +140,8 @@ export function PhoneNumberField({ onChange, value }: PhoneNumberFieldProps) {
   }
 
   return (
-    <div className="grid gap-2" ref={wrapperRef}>
-      <div className="relative flex min-h-[68px] overflow-visible rounded-[18px] border border-primary bg-white shadow-[0_0_0_1px_rgba(48,102,190,0.08)]">
+    <div className="grid w-full min-w-0 gap-2" ref={wrapperRef}>
+      <div className="relative flex min-h-[68px] w-full min-w-0 overflow-visible rounded-[18px] border border-primary bg-white shadow-[0_0_0_1px_rgba(48,102,190,0.08)]">
         <button
           aria-expanded={isPickerOpen}
           aria-haspopup="listbox"
@@ -157,7 +157,7 @@ export function PhoneNumberField({ onChange, value }: PhoneNumberFieldProps) {
 
         <input
           autoComplete="tel-national"
-          className="h-full min-w-0 flex-1 rounded-r-[18px] bg-white px-4 text-[1.02rem] font-medium text-secondary outline-none placeholder:text-[0.95rem] placeholder:text-secondary/35"
+          className="h-full min-w-0 flex-1 rounded-r-[18px] bg-white px-4 text-[0.98rem] font-medium text-secondary outline-none placeholder:text-[0.9rem] placeholder:text-secondary/35"
           inputMode="numeric"
           onChange={(event) => handleLocalNumberChange(event.target.value)}
           placeholder={derivedCountry.placeholder}

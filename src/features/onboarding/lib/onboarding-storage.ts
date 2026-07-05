@@ -6,16 +6,25 @@ export type WorkType =
   | "other"
   | "";
 
-export type IncomeSource = "platform" | "manual" | "";
+export type IncomeSource = "platform" | "manual" | "ewallet" | "";
 
 export type OnboardingDraft = {
   agreedToTerms: boolean;
   fullName: string;
   incomeSource: IncomeSource;
+  incomeSourceLabel: string;
+  pin: string;
+  otpDeliveryMethod: "sms" | "whatsapp" | "";
+  otpExpiresAt: string;
+  otpMaskedDestination: string;
+  otpRequestId: string;
   otpCode: string;
   phone: string;
   phoneDisplay: string;
+  workCategoryLabel: string;
+  workLabel: string;
   workOther: string;
+  workPlatformId: string;
   workType: WorkType;
 };
 
@@ -26,10 +35,19 @@ export const emptyOnboardingDraft: OnboardingDraft = {
   agreedToTerms: false,
   fullName: "",
   incomeSource: "",
+  incomeSourceLabel: "",
+  pin: "",
+  otpDeliveryMethod: "",
+  otpExpiresAt: "",
+  otpMaskedDestination: "",
+  otpRequestId: "",
   otpCode: "",
   phone: "",
   phoneDisplay: "",
+  workCategoryLabel: "",
+  workLabel: "",
   workOther: "",
+  workPlatformId: "",
   workType: "",
 };
 
@@ -82,6 +100,14 @@ export function markOnboardingComplete() {
   }
 
   window.localStorage.setItem(ONBOARDING_COMPLETE_KEY, "true");
+}
+
+export function clearOnboardingComplete() {
+  if (!isBrowser()) {
+    return;
+  }
+
+  window.localStorage.removeItem(ONBOARDING_COMPLETE_KEY);
 }
 
 export function isOnboardingComplete() {

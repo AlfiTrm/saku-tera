@@ -1,11 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import PressButton from "@/src/shared/components/buttons/PressButton";
+import { requestOtp } from "@/src/features/auth/services/authService";
 import { PhoneNumberField } from "@/src/features/onboarding/components/PhoneNumberField";
+import { OnboardingScreenSkeleton } from "@/src/features/onboarding/components/OnboardingScreenSkeleton";
 import { OnboardingShell } from "@/src/features/onboarding/components/OnboardingShell";
+import { createOtpExpiresAt } from "@/src/features/onboarding/lib/otp-timer";
 import {
+  clearOnboardingComplete,
   readOnboardingDraft,
   writeOnboardingDraft,
 } from "@/src/features/onboarding/lib/onboarding-storage";
@@ -21,35 +26,69 @@ export default function RegisterPage() {
   const [phoneDisplay, setPhoneDisplay] = useState(
     () => readOnboardingDraft().phoneDisplay,
   );
-  const [fullName, setFullName] = useState(
-    () => readOnboardingDraft().fullName,
-  );
+  const [fullName, setFullName] = useState(() => readOnboardingDraft().fullName);
   const [agreedToTerms, setAgreedToTerms] = useState(
     () => readOnboardingDraft().agreedToTerms,
   );
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isHydrated) {
-    return null;
+    return <OnboardingScreenSkeleton />;
   }
 
   const canContinue =
     phone.trim().length >= 10 && fullName.trim().length >= 3 && agreedToTerms;
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!canContinue) {
+    if (!canContinue || isSubmitting) {
       return;
     }
 
-    writeOnboardingDraft({
-      agreedToTerms,
-      fullName,
-      phone,
-      phoneDisplay,
-    });
+    try {
+      setIsSubmitting(true);
+      setErrorMessage("");
 
-    router.push("/onboard/verify");
+      const otpResult = await requestOtp({
+        channel: "whatsapp",
+        countryCode: phoneDisplay.split(" ")[0] || "+62",
+        fullName,
+        phoneNumber: phone,
+      });
+
+      clearOnboardingComplete();
+      writeOnboardingDraft({
+        agreedToTerms,
+        fullName,
+        incomeSource: "",
+        incomeSourceLabel: "",
+        otpDeliveryMethod: otpResult.deliveryMethod,
+        otpExpiresAt: createOtpExpiresAt(otpResult.expiresInSeconds),
+        otpMaskedDestination: otpResult.maskedDestination,
+        otpRequestId: otpResult.requestId,
+        otpCode: "",
+        phone,
+        phoneDisplay,
+        pin: "",
+        workCategoryLabel: "",
+        workLabel: "",
+        workOther: "",
+        workPlatformId: "",
+        workType: "",
+      });
+
+      router.push("/onboard/verify");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Kode OTP belum bisa dikirim. Coba lagi sebentar.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -103,14 +142,20 @@ export default function RegisterPage() {
         <div className="grid gap-3 pt-2">
           <PressButton
             className="min-h-13 w-full justify-center py-3 text-base"
-            disabled={!canContinue}
+            disabled={!canContinue || isSubmitting}
             type="submit"
             variant="primary"
           >
-            Kirim Kode OTP
+            {isSubmitting ? "Mengirim OTP..." : "Kirim Kode OTP"}
           </PressButton>
+          {errorMessage ? (
+            <p className="text-center text-sm font-medium text-red-500">{errorMessage}</p>
+          ) : null}
           <p className="text-center text-sm font-medium text-secondary/50">
-            Sudah punya akun? <span className="text-primary">Masuk</span>
+            Sudah punya akun?{" "}
+            <Link className="text-primary" href="/login">
+              Masuk
+            </Link>
           </p>
         </div>
       </form>
