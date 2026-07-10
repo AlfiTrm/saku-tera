@@ -11,7 +11,7 @@ export default function LandingLayout({
   return (
     <>
       <LandingNavbar />
-      <main className="pt-[5.25rem]">{children}</main>
+      <main className="pt-16 sm:pt-[4.5rem]">{children}</main>
       <LandingFooter />
     </>
   );

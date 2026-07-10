@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react";
+import { Popover } from "radix-ui";
 import PressButton from "@/src/shared/components/buttons/PressButton";
 import { AppBottomNav } from "@/src/shared/components/navigation";
 import { useDashboardHomeData } from "@/src/features/dashboard/hooks/useDashboardHomeData";
@@ -9,6 +10,35 @@ import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 import { DashboardEmptyState } from "./DashboardEmptyState";
 import { DashboardLineChart } from "./DashboardLineChart";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
+
+function DashboardInsightInfo({ copy }: { copy: string }) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <button
+          aria-label="Lihat detail estimasi"
+          className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-white/58 outline-none transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/45"
+          type="button"
+        >
+          <Icon className="h-4 w-4" icon="solar:question-circle-linear" />
+        </button>
+      </Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content
+          align="end"
+          className="z-[80] w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-black/8 bg-white px-4 py-3 text-secondary shadow-[0_16px_44px_rgba(23,23,56,0.18)] outline-none"
+          collisionPadding={12}
+          sideOffset={8}
+        >
+          <p className="text-xs font-semibold text-secondary">Tentang estimasi</p>
+          <p className="mt-1 text-xs leading-5 text-secondary/62">{copy}</p>
+          <Popover.Arrow className="fill-white" height={6} width={12} />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
 
 export function DashboardHomeView() {
   const isHydrated = useDashboardHydrated();
@@ -92,16 +122,14 @@ export function DashboardHomeView() {
                       summary.isDataSufficient ? "bg-emerald-300" : "bg-amber-300"
                     }`}
                   />
-                  <p className="text-[11px] font-semibold text-white/90">
+                  <p className="min-w-0 flex-1 truncate text-[11px] font-semibold text-white/90">
                     {summary.insightTitle}
                   </p>
-                  <span className="text-[10px] font-medium text-white/52">
+                  <span className="shrink-0 text-[10px] font-medium text-white/52">
                     {summary.confidenceLabel}
                   </span>
+                  <DashboardInsightInfo copy={summary.insightCopy} />
                 </div>
-                <p className="mt-1.5 max-w-[30ch] text-[11px] leading-5 text-white/68">
-                  {summary.insightCopy}
-                </p>
               </div>
             </>
           ) : (
@@ -179,10 +207,16 @@ export function DashboardHomeView() {
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
-                    <p className="text-[0.9rem] font-bold text-secondary sm:text-sm">
+                    <p
+                      className={`text-[0.9rem] font-bold sm:text-sm ${
+                        transaction.amount.startsWith("+")
+                          ? "text-emerald-600"
+                          : "text-secondary"
+                      }`}
+                    >
                       {transaction.amount}
                     </p>
-                    <p className="hidden text-[10px] font-medium tracking-[0.06em] text-secondary/22 sm:block">
+                    <p className="mt-1 inline-flex rounded-md bg-secondary/[0.055] px-1.5 py-0.5 font-mono text-[9px] font-semibold tracking-[0.04em] text-secondary/48">
                       {transaction.hashPreview}
                     </p>
                   </div>
