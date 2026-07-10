@@ -4,14 +4,12 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useState } from "react";
 import PressButton from "@/src/shared/components/buttons/PressButton";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import { DashboardEmptyState } from "@/src/features/dashboard/components/DashboardEmptyState";
 import { DashboardScreenSkeleton } from "@/src/features/dashboard/components/DashboardScreenSkeleton";
 import { PassportGrantSheet } from "@/src/features/dashboard/components/passport-access/PassportGrantSheet";
 import { PassportAccessCard } from "@/src/features/dashboard/components/passport-access/PassportAccessCard";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { usePassportAccessData } from "@/src/features/dashboard/hooks/usePassportAccessData";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 
 export function PassportAccessView() {
   const [isGrantSheetOpen, setIsGrantSheetOpen] = useState(false);
@@ -115,7 +113,6 @@ export function PassportAccessView() {
         </div>
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("passport")} />
       <PassportGrantSheet
         isOpen={isGrantSheetOpen}
         isSubmitting={isGranting}

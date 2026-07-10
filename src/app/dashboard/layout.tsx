@@ -1,4 +1,5 @@
 import { AuthSessionGuard } from "@/src/features/auth/components/AuthSessionGuard";
+import { DashboardBottomNav } from "@/src/features/dashboard/components/DashboardBottomNav";
 import { InstalledAppGate } from "@/src/features/pwa/components/installed-app-gate";
 
 export default function DashboardLayout({
@@ -11,6 +12,7 @@ export default function DashboardLayout({
       <InstalledAppGate>
         <AuthSessionGuard />
         {children}
+        <DashboardBottomNav />
       </InstalledAppGate>
     </div>
   );

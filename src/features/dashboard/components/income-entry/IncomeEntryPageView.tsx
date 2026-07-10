@@ -3,10 +3,8 @@
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { useDashboardHomeData } from "@/src/features/dashboard/hooks/useDashboardHomeData";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 import { DashboardEmptyState } from "@/src/features/dashboard/components/DashboardEmptyState";
 import { DashboardScreenSkeleton } from "@/src/features/dashboard/components/DashboardScreenSkeleton";
 import { IncomeEntryForm } from "./IncomeEntryForm";
@@ -30,7 +28,6 @@ export function IncomeEntryPageView() {
             title="Form belum bisa dimuat"
           />
         </main>
-        <AppBottomNav items={getDashboardNavItems("home")} />
       </>
     );
   }
@@ -66,7 +63,6 @@ export function IncomeEntryPageView() {
         />
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("home")} />
     </>
   );
 }

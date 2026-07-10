@@ -3,7 +3,6 @@
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 import PressButton from "@/src/shared/components/buttons/PressButton";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import { BottomSheet } from "@/src/shared/components/overlays";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { useDashboardPassportData } from "@/src/features/dashboard/hooks/useDashboardPassportData";
@@ -11,7 +10,6 @@ import type {
   DashboardPassportMetric,
   DashboardPassportPeriod,
 } from "@/src/features/dashboard/types/dashboardData";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 import { DashboardEmptyState } from "./DashboardEmptyState";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
 
@@ -312,7 +310,6 @@ export function DashboardPassportView() {
         </div>
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("passport")} />
       <PassportIssueSheet
         isOpen={isIssueSheetOpen}
         isSubmitting={isIssuing}

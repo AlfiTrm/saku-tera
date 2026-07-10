@@ -5,14 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import PressButton from "@/src/shared/components/buttons/PressButton";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import {
   clearAuthState,
   readAuthSession,
 } from "@/src/features/auth/lib/auth-storage";
 import { logout } from "@/src/features/auth/services/authService";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 import { DashboardScreenSkeleton } from "@/src/features/dashboard/components/DashboardScreenSkeleton";
 
 export function AccountView() {
@@ -105,7 +103,6 @@ export function AccountView() {
         </section>
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("profile")} />
     </>
   );
 }

@@ -3,10 +3,8 @@
 import { Icon } from "@iconify/react";
 import { Popover } from "radix-ui";
 import PressButton from "@/src/shared/components/buttons/PressButton";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import { useDashboardHomeData } from "@/src/features/dashboard/hooks/useDashboardHomeData";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 import { DashboardEmptyState } from "./DashboardEmptyState";
 import { DashboardLineChart } from "./DashboardLineChart";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
@@ -238,7 +236,6 @@ export function DashboardHomeView() {
         </section>
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("home")} />
     </>
   );
 }

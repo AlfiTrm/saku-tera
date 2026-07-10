@@ -2,13 +2,11 @@
 
 import { Icon } from "@iconify/react";
 import Link from "next/link";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import { DashboardEmptyState } from "@/src/features/dashboard/components/DashboardEmptyState";
 import { DashboardScreenSkeleton } from "@/src/features/dashboard/components/DashboardScreenSkeleton";
 import { PassportHistoryTimelineItem } from "@/src/features/dashboard/components/passport-history/PassportHistoryTimelineItem";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { usePassportHistoryData } from "@/src/features/dashboard/hooks/usePassportHistoryData";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 
 export function PassportHistoryView() {
   const isHydrated = useDashboardHydrated();
@@ -88,7 +86,6 @@ export function PassportHistoryView() {
         )}
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("passport")} />
     </>
   );
 }

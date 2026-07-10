@@ -1,10 +1,8 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { useDashboardLedgerData } from "@/src/features/dashboard/hooks/useDashboardLedgerData";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 import { DashboardEmptyState } from "./DashboardEmptyState";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
 
@@ -158,7 +156,6 @@ export function DashboardLedgerView() {
         </section>
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("ledger")} />
     </>
   );
 }
