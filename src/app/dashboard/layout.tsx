@@ -8,7 +8,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-[#faf6ee] text-secondary">
+    <div className="min-h-screen bg-white text-secondary">
       <InstalledAppGate>
         <AuthSessionGuard />
         {children}

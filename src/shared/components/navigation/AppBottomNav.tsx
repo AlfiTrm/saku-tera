@@ -18,7 +18,7 @@ export function AppBottomNav({ items }: AppBottomNavProps) {
   return (
     <nav
       aria-label="Navigasi utama"
-      className="fixed inset-x-0 bottom-0 z-30 mx-auto box-border w-full max-w-[29rem] border-t border-secondary/15 bg-[#fffdf8] pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-30 mx-auto box-border w-full max-w-[29rem] border-t border-secondary/15 bg-white pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="grid grid-cols-4 divide-x divide-secondary/10">
         {items.map((item) => (

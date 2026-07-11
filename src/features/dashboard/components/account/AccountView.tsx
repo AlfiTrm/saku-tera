@@ -1,7 +1,6 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import PressButton from "@/src/shared/components/buttons/PressButton";
@@ -11,6 +10,7 @@ import {
 } from "@/src/features/auth/lib/auth-storage";
 import { logout } from "@/src/features/auth/services/authService";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
+import { DashboardPageHeader } from "@/src/features/dashboard/components/DashboardPageHeader";
 import { DashboardScreenSkeleton } from "@/src/features/dashboard/components/DashboardScreenSkeleton";
 
 export function AccountView() {
@@ -53,22 +53,11 @@ export function AccountView() {
 
   return (
     <>
-      <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
-        <header className="px-2 pb-4">
-          <Link
-            className="mb-2 inline-flex min-h-10 w-fit items-center gap-2 text-sm font-semibold text-secondary/72"
-            href="/dashboard"
-          >
-            <Icon className="h-4 w-4" icon="solar:alt-arrow-left-linear" />
-            Kembali
-          </Link>
-          <h1 className="text-[1.65rem] font-bold leading-none tracking-[-0.05em] text-secondary">
-            Akun
-          </h1>
-          <p className="mt-1 text-sm font-medium text-secondary/36">
-            Kelola sesi login aplikasi kamu.
-          </p>
-        </header>
+      <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col bg-white px-3 pb-28 pt-2">
+        <DashboardPageHeader
+          subtitle="Kelola sesi login aplikasi kamu."
+          title="Akun"
+        />
 
         <section className="rounded-[22px] border border-black/6 bg-white px-4 py-4 shadow-[0_10px_22px_rgba(23,23,56,0.04)]">
           <div className="flex items-start gap-3">

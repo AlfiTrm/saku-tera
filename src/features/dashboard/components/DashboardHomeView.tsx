@@ -7,6 +7,7 @@ import { useDashboardHomeData } from "@/src/features/dashboard/hooks/useDashboar
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { DashboardEmptyState } from "./DashboardEmptyState";
 import { DashboardLineChart } from "./DashboardLineChart";
+import { DashboardPageHeader } from "./DashboardPageHeader";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
 
 function DashboardInsightInfo({ copy }: { copy: string }) {
@@ -53,23 +54,25 @@ export function DashboardHomeView() {
 
   return (
     <>
-      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-3 pb-28 pt-2">
-        <header className="flex items-start justify-between gap-4 px-2 pb-3 pt-1.5">
-          <div className="grid gap-0.5">
-            <p className="text-[11px] font-medium text-secondary/32">Senin, 29 Juni 2026</p>
-            <h1 className="text-[1.7rem] font-bold leading-none tracking-[-0.05em] text-secondary">
-              Halo, {userFullName}
-            </h1>
-          </div>
-
-          <button
-            className="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/8 bg-white text-secondary shadow-[0_8px_20px_rgba(23,23,56,0.06)]"
-            type="button"
-          >
-            <Icon className="h-5 w-5" icon="solar:bell-bing-bold-duotone" />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-tertiary" />
-          </button>
-        </header>
+      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] bg-white flex-col overflow-x-hidden px-3 pb-28 pt-2">
+        <DashboardPageHeader
+          action={
+            <button
+              aria-label="Buka notifikasi"
+              className="relative inline-flex h-11 w-11 items-center justify-center text-secondary/78 outline-none transition-colors hover:text-primary focus-visible:text-primary"
+              type="button"
+            >
+              <Icon className="h-6 w-6" icon="solar:bell-bold" />
+              <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-tertiary" />
+            </button>
+          }
+          subtitle="Senin, 29 Juni 2026"
+          title={
+            <>
+              Halo, <span className="text-primary">{userFullName}</span>
+            </>
+          }
+        />
 
         <section className="overflow-hidden rounded-[24px] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_24%),linear-gradient(145deg,#4478d0_0%,#3c70ca_48%,#2858af_100%)] px-4 py-4 text-white shadow-[0_14px_34px_rgba(48,102,190,0.24)]">
           {summary ? (

@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { useDashboardLedgerData } from "@/src/features/dashboard/hooks/useDashboardLedgerData";
 import { DashboardEmptyState } from "./DashboardEmptyState";
+import { DashboardPageHeader } from "./DashboardPageHeader";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
 
 export function DashboardLedgerView() {
@@ -39,20 +40,18 @@ export function DashboardLedgerView() {
 
   return (
     <>
-      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-3 pb-28 pt-3">
-        <header className="px-2 pb-3">
-          <h1 className="text-[1.65rem] font-bold leading-none tracking-[-0.05em] text-secondary">
-            Buku Kas Digital
-          </h1>
-          <div className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-emerald-600">
-            <span className="inline-flex h-5 w-5 items-center justify-center text-emerald-500">
-              <Icon className="h-4 w-4" icon="solar:shield-check-bold" />
+      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden bg-white px-3 pb-28 pt-2">
+        <DashboardPageHeader
+          subtitle={
+            <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-600">
+              <Icon className="h-4 w-4 text-emerald-500" icon="solar:shield-check-bold" />
+              <span>{integrityCount}</span>
+              <span className="text-emerald-300">/</span>
+              <span>{integrityStatus}</span>
             </span>
-            <span>{integrityCount}</span>
-            <span className="text-emerald-300">/</span>
-            <span>{integrityStatus}</span>
-          </div>
-        </header>
+          }
+          title="Buku Kas Digital"
+        />
 
         <section className="px-1">
           <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

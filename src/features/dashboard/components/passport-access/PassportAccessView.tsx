@@ -32,7 +32,7 @@ export function PassportAccessView() {
 
   return (
     <>
-      <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
+      <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col bg-white px-3 pb-28 pt-3">
         <header className="px-2 pb-3">
           <Link
             className="mb-2 inline-flex min-h-10 w-fit items-center gap-2 text-sm font-semibold text-secondary/72"

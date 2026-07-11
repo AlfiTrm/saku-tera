@@ -11,6 +11,7 @@ import type {
   DashboardPassportPeriod,
 } from "@/src/features/dashboard/types/dashboardData";
 import { DashboardEmptyState } from "./DashboardEmptyState";
+import { DashboardPageHeader } from "./DashboardPageHeader";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
 
 function PassportIssueSheet({
@@ -157,15 +158,11 @@ export function DashboardPassportView() {
 
   return (
     <>
-      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-3 pb-28 pt-3">
-        <header className="px-2 pb-3">
-          <h1 className="text-[1.65rem] font-bold leading-none tracking-[-0.05em] text-secondary">
-            Income Passport
-          </h1>
-          <p className="mt-1 text-sm font-medium text-secondary/32">
-            Bukti penghasilan terverifikasi kamu
-          </p>
-        </header>
+      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden bg-white px-3 pb-28 pt-2">
+        <DashboardPageHeader
+          subtitle="Bukti penghasilan terverifikasi kamu"
+          title="Income Passport"
+        />
 
         <section className="overflow-hidden rounded-[22px] bg-[linear-gradient(145deg,#4074cc_0%,#315fb4_100%)] px-4 py-4 text-white shadow-[0_14px_34px_rgba(48,102,190,0.22)]">
           <div className="flex items-start justify-between gap-4">

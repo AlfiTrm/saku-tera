@@ -21,7 +21,7 @@ export function IncomeEntryPageView() {
   if (!data) {
     return (
       <>
-        <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-3 pb-28 pt-3">
+        <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden bg-white px-3 pb-28 pt-3">
           <DashboardEmptyState
             description={error || "Coba muat ulang sebentar lagi."}
             icon="solar:danger-circle-bold-duotone"
@@ -34,7 +34,7 @@ export function IncomeEntryPageView() {
 
   return (
     <>
-      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-4 pb-28 pt-3">
+      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden bg-white px-4 pb-28 pt-3">
         <header className="px-1 pb-4">
           <Link
             className="mb-3 inline-flex min-h-11 w-fit items-center gap-2 rounded-xl px-1 text-sm font-semibold text-secondary/80 transition-opacity hover:opacity-70"
