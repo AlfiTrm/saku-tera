@@ -15,7 +15,7 @@ import type {
 
 type AccessConsentApi = {
   consent_id: string;
-  data_scope: string[];
+  data_scope: string[] | null;
   days_remaining: number;
   expires_at: string;
   granted_at: string;
@@ -30,7 +30,7 @@ type AccessLogApi = {
   access_log_id: string;
   accessed_at: string;
   consent_status: string;
-  data_scope: string[];
+  data_scope: string[] | null;
   note: string;
   organization_name: string;
   organization_type: string;
@@ -94,7 +94,7 @@ function mapAccessBadgeTone(
 
 function mapAccessExpiresText(consent: AccessConsentApi) {
   if (!consent.expires_at || consent.days_remaining === 0) {
-    const fullScopeSelected = consent.data_scope.includes("Akses penuh");
+    const fullScopeSelected = (consent.data_scope ?? []).includes("Akses penuh");
     return fullScopeSelected ? "Akses penuh tanpa batas waktu" : "Tanpa batas waktu";
   }
 
@@ -115,7 +115,7 @@ function mapAccessEntry(consent: AccessConsentApi): PassportAccessEntry {
     icon: mapOrganizationIcon(consent.organization_type),
     id: consent.consent_id,
     issuedText: `Diberikan ${consent.granted_at}`,
-    metrics: consent.data_scope,
+    metrics: consent.data_scope ?? [],
     organization: consent.organization_name,
     organizationType: consent.organization_type,
     purpose: consent.purpose || undefined,
@@ -132,7 +132,7 @@ function mapHistoryEntry(log: AccessLogApi): PassportHistoryEntry {
     accessSummary: log.note,
     badgeLabel: log.status_label,
     id: log.access_log_id,
-    metrics: log.data_scope,
+    metrics: log.data_scope ?? [],
     organization: log.organization_name,
     organizationType: log.organization_type,
     status: mapHistoryStatus(log.consent_status),
@@ -149,7 +149,7 @@ function normalizeGrantScope(scopes: PassportAccessScope[]) {
 }
 
 export async function getPassportAccessConsents(): Promise<PassportAccessEntry[]> {
-  const response = await apiRequest<{ consents: AccessConsentApi[] }>(
+  const response = await apiRequest<{ consents: AccessConsentApi[] | null }>(
     "/passport/access",
     {
       headers: getAuthorizationHeader(),
@@ -157,14 +157,14 @@ export async function getPassportAccessConsents(): Promise<PassportAccessEntry[]
     },
   );
 
-  return response.data.consents.map(mapAccessEntry);
+  return (response.data.consents ?? []).map(mapAccessEntry);
 }
 
 export async function getPassportAccessLogs(
   filter: PassportHistoryFilter,
 ): Promise<PassportHistoryEntry[]> {
   const query = filter ? `?filter=${filter}` : "";
-  const response = await apiRequest<{ logs: AccessLogApi[] }>(
+  const response = await apiRequest<{ logs: AccessLogApi[] | null }>(
     `/passport/access/logs${query}`,
     {
       headers: getAuthorizationHeader(),
@@ -172,7 +172,7 @@ export async function getPassportAccessLogs(
     },
   );
 
-  return response.data.logs.map(mapHistoryEntry);
+  return (response.data.logs ?? []).map(mapHistoryEntry);
 }
 
 export async function getPassportOrganizations(): Promise<PassportOrganization[]> {

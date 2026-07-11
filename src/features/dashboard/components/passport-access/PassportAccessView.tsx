@@ -4,14 +4,12 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useState } from "react";
 import PressButton from "@/src/shared/components/buttons/PressButton";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import { DashboardEmptyState } from "@/src/features/dashboard/components/DashboardEmptyState";
 import { DashboardScreenSkeleton } from "@/src/features/dashboard/components/DashboardScreenSkeleton";
 import { PassportGrantSheet } from "@/src/features/dashboard/components/passport-access/PassportGrantSheet";
 import { PassportAccessCard } from "@/src/features/dashboard/components/passport-access/PassportAccessCard";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { usePassportAccessData } from "@/src/features/dashboard/hooks/usePassportAccessData";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 
 export function PassportAccessView() {
   const [isGrantSheetOpen, setIsGrantSheetOpen] = useState(false);
@@ -34,7 +32,7 @@ export function PassportAccessView() {
 
   return (
     <>
-      <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
+      <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col bg-white px-3 pb-28 pt-3">
         <header className="px-2 pb-3">
           <Link
             className="mb-2 inline-flex min-h-10 w-fit items-center gap-2 text-sm font-semibold text-secondary/72"
@@ -69,9 +67,7 @@ export function PassportAccessView() {
                   entry={entry}
                   isRevoking={revokingConsentId === entry.id}
                   key={entry.id}
-                  onRevoke={(consentId) => {
-                    void revokeAccess(consentId);
-                  }}
+                  onRevoke={revokeAccess}
                 />
               ))}
             </div>
@@ -115,7 +111,6 @@ export function PassportAccessView() {
         </div>
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("passport")} />
       <PassportGrantSheet
         isOpen={isGrantSheetOpen}
         isSubmitting={isGranting}

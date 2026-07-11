@@ -8,7 +8,6 @@ import {
 } from "@/src/features/dashboard/services/dashboardService";
 import type {
   IncomeDocumentExtraction,
-  IncomeEntryMethod,
   IncomeSourceOption,
 } from "@/src/features/dashboard/types/dashboardData";
 
@@ -41,7 +40,7 @@ function mapSourceHintToSourceId(
   sourceOptions: IncomeSourceOption[],
 ) {
   if (!sourceHint) {
-    return sourceOptions[0]?.id ?? "manual";
+    return sourceOptions[0]?.id ?? "";
   }
 
   const normalizedHint = sourceHint.toLowerCase();
@@ -49,7 +48,7 @@ function mapSourceHintToSourceId(
     option.label.toLowerCase().includes(normalizedHint),
   );
 
-  return matchedSource?.id ?? sourceOptions[0]?.id ?? "manual";
+  return matchedSource?.id ?? sourceOptions[0]?.id ?? "";
 }
 
 export function useIncomeEntrySheet({
@@ -57,32 +56,38 @@ export function useIncomeEntrySheet({
   onSuccess,
   sourceOptions,
 }: UseIncomeEntrySheetParams) {
-  const [method, setMethod] = useState<IncomeEntryMethod>("manual");
   const [amountInput, setAmountInput] = useState("");
   const [selectedSourceId, setSelectedSourceId] = useState(
-    sourceOptions[0]?.id ?? "manual",
+    sourceOptions[0]?.id ?? "",
   );
   const [description, setDescription] = useState("");
   const [documentState, setDocumentState] = useState<{
+    error: string | null;
     extraction: IncomeDocumentExtraction | null;
+    fileName: string;
     isExtracting: boolean;
   }>({
+    error: null,
     extraction: null,
+    fileName: "",
     isExtracting: false,
   });
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const amount = parseAmount(amountInput);
-  const canSubmit = amount >= 10000;
+  const canSubmit =
+    amount >= 10000 &&
+    sourceOptions.some((source) => source.id === selectedSourceId);
 
   function resetForm() {
-    setMethod("manual");
     setAmountInput("");
     setDescription("");
-    setSelectedSourceId(sourceOptions[0]?.id ?? "manual");
+    setSelectedSourceId(sourceOptions[0]?.id ?? "");
     setDocumentState({
+      error: null,
       extraction: null,
+      fileName: "",
       isExtracting: false,
     });
     setErrorMessage("");
@@ -95,30 +100,47 @@ export function useIncomeEntrySheet({
     }
 
     try {
-      setMethod("document");
       setErrorMessage("");
       setDocumentState({
+        error: null,
         extraction: null,
+        fileName: file.name,
         isExtracting: true,
       });
 
       const extraction = await extractIncomeDocument(file);
 
+      if (!extraction.amount) {
+        setDocumentState({
+          error: "OCR belum menemukan nominal yang yakin. Kamu bisa lanjut isi manual.",
+          extraction: null,
+          fileName: file.name,
+          isExtracting: false,
+        });
+        return;
+      }
+
       setDocumentState({
+        error: null,
         extraction,
+        fileName: file.name,
         isExtracting: false,
       });
-      setAmountInput(extraction.amount ? formatRupiahInput(String(extraction.amount)) : "");
+      setAmountInput(formatRupiahInput(String(extraction.amount)));
       setDescription(extraction.description ?? "");
       setSelectedSourceId(
         mapSourceHintToSourceId(extraction.sourceHint, sourceOptions),
       );
-    } catch {
+    } catch (error) {
       setDocumentState({
+        error:
+          error instanceof Error && error.message === "invalid-file-type"
+            ? "Format file belum didukung. Gunakan PDF, JPG, PNG, WEBP, atau HEIC."
+            : "Dokumen belum bisa dibaca. Kamu tetap bisa isi manual.",
         extraction: null,
+        fileName: file.name,
         isExtracting: false,
       });
-      setErrorMessage("Dokumen belum bisa dibaca. Kamu tetap bisa isi manual.");
     }
   }
 
@@ -162,11 +184,9 @@ export function useIncomeEntrySheet({
     handleDocumentSelect,
     handleSubmit,
     isSubmitting,
-    method,
     selectedSourceId,
     setAmountInput: (value: string) => setAmountInput(formatRupiahInput(value)),
     setDescription,
-    setMethod,
     setSelectedSourceId,
   };
 }

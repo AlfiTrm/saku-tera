@@ -13,6 +13,7 @@ export function PassportHistoryTimelineItem({
   isLast,
 }: PassportHistoryTimelineItemProps) {
   const isValid = entry.status === "valid";
+  const metrics = Array.isArray(entry.metrics) ? entry.metrics : [];
 
   return (
     <article className="grid grid-cols-[2.25rem_1fr] gap-3">
@@ -58,9 +59,9 @@ export function PassportHistoryTimelineItem({
           </span>
         </div>
 
-        {entry.metrics.length > 0 ? (
+        {metrics.length > 0 ? (
           <div className="mt-3 flex flex-wrap gap-2">
-            {entry.metrics.map((metric) => (
+            {metrics.map((metric) => (
               <span
                 className="rounded-lg bg-primary/[0.06] px-2.5 py-1 text-[10px] font-semibold text-primary"
                 key={metric}

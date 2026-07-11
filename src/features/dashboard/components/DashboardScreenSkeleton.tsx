@@ -4,10 +4,10 @@ import { Skeleton } from "@/src/shared/components/feedback";
 
 export function DashboardScreenSkeleton() {
   return (
-    <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
-      <div className="grid gap-2 px-2 pb-4">
-        <Skeleton className="h-3 w-28 rounded-full" />
+    <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col bg-white px-3 pb-28 pt-3">
+      <div className="grid min-h-[76px] content-start gap-2 px-2 pb-3 pt-1.5">
         <Skeleton className="h-9 w-40 rounded-2xl" />
+        <Skeleton className="h-3 w-28 rounded-full" />
       </div>
 
       <Skeleton className="h-60 rounded-[24px]" />

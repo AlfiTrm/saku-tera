@@ -1,14 +1,43 @@
 "use client";
 
 import { Icon } from "@iconify/react";
+import { Popover } from "radix-ui";
 import PressButton from "@/src/shared/components/buttons/PressButton";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import { useDashboardHomeData } from "@/src/features/dashboard/hooks/useDashboardHomeData";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 import { DashboardEmptyState } from "./DashboardEmptyState";
 import { DashboardLineChart } from "./DashboardLineChart";
+import { DashboardPageHeader } from "./DashboardPageHeader";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
+
+function DashboardInsightInfo({ copy }: { copy: string }) {
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <button
+          aria-label="Lihat detail estimasi"
+          className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-white/58 outline-none transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-white/45"
+          type="button"
+        >
+          <Icon className="h-4 w-4" icon="solar:question-circle-linear" />
+        </button>
+      </Popover.Trigger>
+
+      <Popover.Portal>
+        <Popover.Content
+          align="end"
+          className="z-[80] w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-black/8 bg-white px-4 py-3 text-secondary shadow-[0_16px_44px_rgba(23,23,56,0.18)] outline-none"
+          collisionPadding={12}
+          sideOffset={8}
+        >
+          <p className="text-xs font-semibold text-secondary">Tentang estimasi</p>
+          <p className="mt-1 text-xs leading-5 text-secondary/62">{copy}</p>
+          <Popover.Arrow className="fill-white" height={6} width={12} />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
 
 export function DashboardHomeView() {
   const isHydrated = useDashboardHydrated();
@@ -25,23 +54,25 @@ export function DashboardHomeView() {
 
   return (
     <>
-      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] flex-col overflow-x-hidden px-3 pb-28 pt-2">
-        <header className="flex items-start justify-between gap-4 px-2 pb-3 pt-1.5">
-          <div className="grid gap-0.5">
-            <p className="text-[11px] font-medium text-secondary/32">Senin, 29 Juni 2026</p>
-            <h1 className="text-[1.7rem] font-bold leading-none tracking-[-0.05em] text-secondary">
-              Halo, {userFullName}
-            </h1>
-          </div>
-
-          <button
-            className="relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-black/8 bg-white text-secondary shadow-[0_8px_20px_rgba(23,23,56,0.06)]"
-            type="button"
-          >
-            <Icon className="h-5 w-5" icon="solar:bell-bing-bold-duotone" />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-tertiary" />
-          </button>
-        </header>
+      <main className="mx-auto box-border flex min-h-screen w-full max-w-[29rem] bg-white flex-col overflow-x-hidden px-3 pb-28 pt-2">
+        <DashboardPageHeader
+          action={
+            <button
+              aria-label="Buka notifikasi"
+              className="relative inline-flex h-11 w-11 items-center justify-center text-secondary/78 outline-none transition-colors hover:text-primary focus-visible:text-primary"
+              type="button"
+            >
+              <Icon className="h-6 w-6" icon="solar:bell-bold" />
+              <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-tertiary" />
+            </button>
+          }
+          subtitle="Senin, 29 Juni 2026"
+          title={
+            <>
+              Halo, <span className="text-primary">{userFullName}</span>
+            </>
+          }
+        />
 
         <section className="overflow-hidden rounded-[24px] bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_24%),linear-gradient(145deg,#4478d0_0%,#3c70ca_48%,#2858af_100%)] px-4 py-4 text-white shadow-[0_14px_34px_rgba(48,102,190,0.24)]">
           {summary ? (
@@ -92,16 +123,14 @@ export function DashboardHomeView() {
                       summary.isDataSufficient ? "bg-emerald-300" : "bg-amber-300"
                     }`}
                   />
-                  <p className="text-[11px] font-semibold text-white/90">
+                  <p className="min-w-0 flex-1 truncate text-[11px] font-semibold text-white/90">
                     {summary.insightTitle}
                   </p>
-                  <span className="text-[10px] font-medium text-white/52">
+                  <span className="shrink-0 text-[10px] font-medium text-white/52">
                     {summary.confidenceLabel}
                   </span>
+                  <DashboardInsightInfo copy={summary.insightCopy} />
                 </div>
-                <p className="mt-1.5 max-w-[30ch] text-[11px] leading-5 text-white/68">
-                  {summary.insightCopy}
-                </p>
               </div>
             </>
           ) : (
@@ -179,10 +208,16 @@ export function DashboardHomeView() {
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
-                    <p className="text-[0.9rem] font-bold text-secondary sm:text-sm">
+                    <p
+                      className={`text-[0.9rem] font-bold sm:text-sm ${
+                        transaction.amount.startsWith("+")
+                          ? "text-emerald-600"
+                          : "text-secondary"
+                      }`}
+                    >
                       {transaction.amount}
                     </p>
-                    <p className="hidden text-[10px] font-medium tracking-[0.06em] text-secondary/22 sm:block">
+                    <p className="mt-1 inline-flex rounded-md bg-secondary/[0.055] px-1.5 py-0.5 font-mono text-[9px] font-semibold tracking-[0.04em] text-secondary/48">
                       {transaction.hashPreview}
                     </p>
                   </div>
@@ -204,7 +239,6 @@ export function DashboardHomeView() {
         </section>
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("home")} />
     </>
   );
 }

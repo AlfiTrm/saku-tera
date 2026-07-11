@@ -122,6 +122,7 @@ function mapPassportPeriodLabel(period: DashboardPassportPeriodType) {
 
 function createPassportPeriods(
   preview: PassportPreviewResponse["data"] | null,
+  selectedPeriod: DashboardPassportPeriodType,
 ): DashboardPassportPeriod[] {
   const periods: DashboardPassportPeriodType[] = ["3_bulan", "6_bulan", "12_bulan"];
 
@@ -136,7 +137,7 @@ function createPassportPeriods(
           : period === "6_bulan"
             ? "6 bulan"
             : "12 bulan",
-    selected: preview?.period_type === period,
+    selected: selectedPeriod === period,
   }));
 }
 
@@ -148,11 +149,12 @@ function createPassportMetrics(
   }
 
   const trendValue = `${preview.stability_label} ${formatTrendChange(preview.trend_change_pct)}`;
+  const riskValue = `${preview.risk_level} (${Math.round(preview.risk_score * 100)}%)`;
 
   return [
     { label: "Estimasi Gaji Bulanan", value: formatShortCurrency(preview.emi_value) },
     { label: "Tren Stabilitas", tone: "success", value: trendValue },
-    { label: "Skor Risiko", tone: "success", value: preview.risk_level },
+    { label: "Skor Risiko", tone: "success", value: riskValue },
     { label: "Total Entri", value: String(preview.total_entries) },
   ];
 }
@@ -201,11 +203,14 @@ function mapActivePassport(
 export function mapDashboardPassportData(
   response: PassportResponse,
   preview: PassportPreviewResponse["data"] | null,
+  selectedPeriod: DashboardPassportPeriodType,
+  previewError: string | null,
 ): DashboardPassportData {
   return {
     activePassport: mapActivePassport(response.data.active_passport),
-    issuePeriods: createPassportPeriods(preview),
+    issuePeriods: createPassportPeriods(preview, selectedPeriod),
     metrics: createPassportMetrics(preview),
+    previewError,
     summary: createPassportSummary(response.data),
   };
 }

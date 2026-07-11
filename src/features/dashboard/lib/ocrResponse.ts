@@ -160,46 +160,20 @@ export function normalizeOcrPayload(
 
 export function createFallbackExtraction(file: File): IncomeDocumentExtraction {
   const normalizedName = file.name.toLowerCase();
-
-  if (normalizedName.includes("invoice")) {
-    return {
-      amount: 425000,
-      confidence: "medium",
-      description: "Nominal awal diisi dari nama file invoice",
-      documentType: "invoice",
-      fileName: file.name,
-      sourceHint: "Input Manual",
-    };
-  }
-
-  if (normalizedName.includes("slip") || normalizedName.includes("gaji")) {
-    return {
-      amount: 1850000,
-      confidence: "medium",
-      description: "Nominal awal diisi dari slip penghasilan",
-      documentType: "salary-slip",
-      fileName: file.name,
-      sourceHint: "Input Manual",
-    };
-  }
-
-  if (normalizedName.includes("transfer") || normalizedName.includes("bukti")) {
-    return {
-      amount: 735000,
-      confidence: "medium",
-      description: "Nominal awal diisi dari bukti transfer",
-      documentType: "bank-proof",
-      fileName: file.name,
-      sourceHint: "OVO - Kurir Online",
-    };
-  }
+  const documentType: IncomeDocumentType = normalizedName.includes("invoice")
+    ? "invoice"
+    : normalizedName.includes("slip") || normalizedName.includes("gaji")
+      ? "salary-slip"
+      : normalizedName.includes("transfer") || normalizedName.includes("bukti")
+        ? "bank-proof"
+        : "unknown";
 
   return {
     amount: undefined,
     confidence: "low",
     description: "OCR belum menemukan nominal yang yakin. Kamu bisa lanjut isi manual.",
-    documentType: "unknown",
+    documentType,
     fileName: file.name,
-    sourceHint: "Input Manual",
+    sourceHint: undefined,
   };
 }

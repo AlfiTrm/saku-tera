@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { InstallInstructions } from "@/src/features/pwa/components/InstallInstructions";
 import { useInstallPrompt } from "@/src/features/pwa/hooks/useInstallPrompt";
 import PressButton from "@/src/shared/components/buttons/PressButton";
@@ -23,6 +23,7 @@ export function LandingInstallButton({ className }: LandingInstallButtonProps) {
   const router = useRouter();
   const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
   const [isMobileGateOpen, setIsMobileGateOpen] = useState(false);
+  const hasHandledAutoInstall = useRef(false);
   const {
     installExperience,
     isInstalled,
@@ -32,6 +33,37 @@ export function LandingInstallButton({ className }: LandingInstallButtonProps) {
   } = useInstallPrompt();
 
   const label = isInstalled ? "Buka App" : "Install PWA";
+
+  useEffect(() => {
+    const shouldAutoInstall =
+      new URLSearchParams(window.location.search).get("install") === "pwa" &&
+      !hasHandledAutoInstall.current &&
+      !isInstalled &&
+      isMobileViewport();
+
+    if (!shouldAutoInstall) {
+      return;
+    }
+
+    hasHandledAutoInstall.current = true;
+    window.history.replaceState({}, "", window.location.pathname + window.location.hash);
+
+    const timer = window.setTimeout(async () => {
+      if (installExperience === "native-prompt") {
+        const choice = await promptInstall();
+        if (choice?.outcome === "dismissed") {
+          setIsInstructionsOpen(true);
+        }
+        return;
+      }
+
+      setIsInstructionsOpen(true);
+    }, 320);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [installExperience, isInstalled, promptInstall]);
 
   async function handleClick() {
     if (isInstalled && isStandaloneDisplay) {

@@ -1,29 +1,73 @@
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { LandingInstallButton } from "@/src/features/landing/components/LandingInstallButton";
 import { Container } from "@/src/shared/components/layout/Container";
-import Image from "next/image";
 
 export function LandingHero() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    let ticking = false;
+
+    function updateScroll() {
+      setScrollY(window.scrollY);
+      ticking = false;
+    }
+
+    function handleScroll() {
+      if (ticking) {
+        return;
+      }
+
+      ticking = true;
+      window.requestAnimationFrame(updateScroll);
+    }
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const backgroundOffset = Math.min(scrollY * 0.18, 96);
+  const contentOffset = Math.min(scrollY * 0.1, 48);
+
   return (
     <section className="relative overflow-hidden bg-primary text-white">
-      <Image
-        src="/landing/hero-bg.webp"
-        alt=""
-        fill
-        className="absolute top-0 left-0 w-full h-full object-cover"
-        priority
-      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 will-change-transform"
+        style={{ transform: `translate3d(0, ${backgroundOffset}px, 0) scale(1.08)` }}
+      >
+        <Image
+          src="/landing/hero-bg.webp"
+          alt=""
+          fill
+          className="absolute top-0 left-0 h-full w-full object-cover"
+          priority
+        />
+      </div>
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-[linear-gradient(180deg,rgba(16,24,56,0.54)_0%,rgba(18,30,72,0.42)_46%,rgba(22,35,80,0.58)_100%)]"
+        style={{ transform: `translate3d(0, ${backgroundOffset * 0.55}px, 0)` }}
       />
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-[linear-gradient(90deg,rgba(23,23,56,0.18)_0%,rgba(23,23,56,0.08)_100%)]"
+        style={{ transform: `translate3d(0, ${backgroundOffset * 0.3}px, 0)` }}
       />
 
-      <Container className="relative py-16 sm:py-20 lg:py-24">
-        <div className="grid gap-8 justify-items-center py-8 text-center lg:min-h-[35rem] lg:content-center">
+      <Container className="relative pt-2 pb-14 sm:pt-4 sm:pb-16 lg:pt-6 lg:pb-20">
+        <div
+          className="grid gap-8 justify-items-center py-2 text-center lg:min-h-[31rem] lg:content-center"
+          style={{ transform: `translate3d(0, ${contentOffset}px, 0)` }}
+        >
           <div className="grid max-w-[46rem] gap-4 justify-items-center">
             <h1 className="max-w-[11ch] text-[clamp(2.45rem,7vw,5.5rem)] font-bold leading-[0.96] tracking-[-0.06em] sm:leading-[0.94]">
               Catat, verifikasi, dan tunjukkan penghasilanmu.

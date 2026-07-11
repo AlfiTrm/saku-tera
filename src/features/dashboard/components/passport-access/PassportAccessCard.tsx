@@ -7,7 +7,7 @@ import type { PassportAccessEntry } from "@/src/features/dashboard/types/passpor
 type PassportAccessCardProps = {
   entry: PassportAccessEntry;
   isRevoking?: boolean;
-  onRevoke?: (consentId: string) => void;
+  onRevoke?: (consentId: string) => void | Promise<unknown>;
 };
 
 export function PassportAccessCard({
@@ -17,6 +17,7 @@ export function PassportAccessCard({
 }: PassportAccessCardProps) {
   const isActive =
     entry.badgeTone === "active" || entry.badgeTone === "expiring";
+  const metrics = Array.isArray(entry.metrics) ? entry.metrics : [];
 
   return (
     <article className="rounded-[20px] border border-black/6 bg-white px-4 py-3 shadow-[0_10px_22px_rgba(23,23,56,0.04)]">
@@ -46,9 +47,9 @@ export function PassportAccessCard({
         </span>
       </div>
 
-      {entry.metrics.length ? (
+      {metrics.length ? (
         <div className="mt-3 flex flex-wrap gap-2">
-          {entry.metrics.map((metric) => (
+          {metrics.map((metric) => (
             <span
               className="rounded-lg bg-primary/[0.06] px-2.5 py-1 text-[10px] font-semibold text-primary"
               key={metric}

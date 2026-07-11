@@ -44,8 +44,6 @@ export type CreateIncomeEntryPayload = {
   transactionDate: string;
 };
 
-export type IncomeEntryMethod = "manual" | "document";
-
 export type IncomeDocumentType =
   | "invoice"
   | "salary-slip"
@@ -127,5 +125,6 @@ export type DashboardPassportData = {
   activePassport: ActivePassport | null;
   issuePeriods: DashboardPassportPeriod[];
   metrics: DashboardPassportMetric[];
+  previewError: string | null;
   summary: DashboardPassportSummary;
 };

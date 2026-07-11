@@ -2,13 +2,11 @@
 
 import { Icon } from "@iconify/react";
 import Link from "next/link";
-import { AppBottomNav } from "@/src/shared/components/navigation";
 import { DashboardEmptyState } from "@/src/features/dashboard/components/DashboardEmptyState";
 import { DashboardScreenSkeleton } from "@/src/features/dashboard/components/DashboardScreenSkeleton";
 import { PassportHistoryTimelineItem } from "@/src/features/dashboard/components/passport-history/PassportHistoryTimelineItem";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { usePassportHistoryData } from "@/src/features/dashboard/hooks/usePassportHistoryData";
-import { getDashboardNavItems } from "@/src/features/dashboard/lib/navigation";
 
 export function PassportHistoryView() {
   const isHydrated = useDashboardHydrated();
@@ -26,7 +24,7 @@ export function PassportHistoryView() {
 
   return (
     <>
-      <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col px-3 pb-28 pt-3">
+      <main className="mx-auto flex min-h-screen w-full max-w-[29rem] flex-col bg-white px-3 pb-28 pt-3">
         <header className="px-2 pb-3">
           <Link
             className="mb-2 inline-flex min-h-10 w-fit items-center gap-2 text-sm font-semibold text-secondary/72"
@@ -88,7 +86,6 @@ export function PassportHistoryView() {
         )}
       </main>
 
-      <AppBottomNav items={getDashboardNavItems("passport")} />
     </>
   );
 }
