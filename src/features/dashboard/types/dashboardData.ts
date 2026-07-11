@@ -127,5 +127,6 @@ export type DashboardPassportData = {
   activePassport: ActivePassport | null;
   issuePeriods: DashboardPassportPeriod[];
   metrics: DashboardPassportMetric[];
+  previewError: string | null;
   summary: DashboardPassportSummary;
 };

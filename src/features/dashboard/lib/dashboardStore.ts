@@ -10,6 +10,7 @@ function clonePassportData(data: DashboardPassportData): DashboardPassportData {
     activePassport: data.activePassport ? { ...data.activePassport } : null,
     issuePeriods: data.issuePeriods.map((period) => ({ ...period })),
     metrics: data.metrics.map((metric) => ({ ...metric })),
+    previewError: data.previewError,
     summary: { ...data.summary },
   };
 }
@@ -17,6 +18,8 @@ function clonePassportData(data: DashboardPassportData): DashboardPassportData {
 const passportData = mapDashboardPassportData(
   dashboardPassportResponseMock,
   dashboardPassportPreviewResponseMock.data,
+  "3_bulan",
+  null,
 );
 
 export function readDashboardPassportData() {

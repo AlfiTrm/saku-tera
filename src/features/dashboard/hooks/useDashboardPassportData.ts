@@ -25,14 +25,27 @@ export function useDashboardPassportData() {
     isLoading: true,
   });
   const [isIssuing, setIsIssuing] = useState(false);
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false);
+  const [issueError, setIssueError] = useState<string | null>(null);
 
-  const load = useCallback(async (period = selectedPeriod) => {
+  function selectPeriod(period: DashboardPassportPeriodType) {
+    setIsPreviewLoading(true);
+    setIssueError(null);
+    setSelectedPeriod(period);
+  }
+
+  const load = useCallback(async (
+    period = selectedPeriod,
+    showPageLoader = true,
+  ) => {
     try {
-      setState((currentState) => ({
-        ...currentState,
-        error: null,
-        isLoading: true,
-      }));
+      if (showPageLoader) {
+        setState((currentState) => ({
+          ...currentState,
+          error: null,
+          isLoading: true,
+        }));
+      }
 
       const data = await getDashboardPassportData({ period });
 
@@ -41,6 +54,7 @@ export function useDashboardPassportData() {
         error: null,
         isLoading: false,
       });
+      return true;
     } catch (error) {
       setState((currentState) => ({
         data: currentState.data,
@@ -50,6 +64,7 @@ export function useDashboardPassportData() {
             : "Gagal memuat data passport.",
         isLoading: false,
       }));
+      return false;
     }
   }, [selectedPeriod]);
 
@@ -60,17 +75,16 @@ export function useDashboardPassportData() {
 
     try {
       setIsIssuing(true);
+      setIssueError(null);
       await issueIncomePassport(selectedPeriod);
-      await load(selectedPeriod);
+      await load(selectedPeriod, false);
       return true;
     } catch (error) {
-      setState((currentState) => ({
-        ...currentState,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Passport belum bisa diterbitkan.",
-      }));
+      setIssueError(
+        error instanceof Error
+          ? error.message
+          : "Passport belum bisa diterbitkan.",
+      );
       return false;
     } finally {
       setIsIssuing(false);
@@ -79,6 +93,8 @@ export function useDashboardPassportData() {
 
   useEffect(() => {
     let isMounted = true;
+    setIsPreviewLoading(true);
+    setIssueError(null);
 
     async function loadOnMount() {
       try {
@@ -106,6 +122,10 @@ export function useDashboardPassportData() {
               : "Gagal memuat data passport.",
           isLoading: false,
         }));
+      } finally {
+        if (isMounted) {
+          setIsPreviewLoading(false);
+        }
       }
     }
 
@@ -119,9 +139,12 @@ export function useDashboardPassportData() {
   return {
     ...state,
     isIssuing,
+    isPreviewLoading,
+    issueError,
     issuePassport: handleIssuePassport,
+    clearIssueError: () => setIssueError(null),
     reload: load,
     selectedPeriod,
-    setSelectedPeriod,
+    setSelectedPeriod: selectPeriod,
   };
 }

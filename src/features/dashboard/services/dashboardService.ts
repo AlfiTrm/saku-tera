@@ -277,10 +277,12 @@ export async function getDashboardPassportData({
   });
 
   let previewResponse: PassportPreviewResponse | null = null;
+  let previewError: string | null = null;
 
   try {
+    const previewParams = new URLSearchParams({ period });
     const previewPayload = await apiRequest<PassportPreviewResponse>(
-      `/passport/preview?period=${period}`,
+      `/passport/preview?${previewParams.toString()}`,
       {
         headers: getAuthorizationHeaders(),
         method: "GET",
@@ -292,9 +294,16 @@ export async function getDashboardPassportData({
     if (!(error instanceof ApiError) || error.code !== 400) {
       throw error;
     }
+
+    previewError = error.message;
   }
 
-  return mapDashboardPassportData(passportResponse, previewResponse);
+  return mapDashboardPassportData(
+    passportResponse,
+    previewResponse,
+    period,
+    previewError,
+  );
 }
 
 export async function issueIncomePassport(period: DashboardPassportPeriodType) {

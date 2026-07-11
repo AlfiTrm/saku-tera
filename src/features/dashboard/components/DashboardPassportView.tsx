@@ -15,21 +15,29 @@ import { DashboardPageHeader } from "./DashboardPageHeader";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
 
 function PassportIssueSheet({
+  issueError,
   isOpen,
+  isPreviewLoading,
   isSubmitting,
   metrics,
   onClose,
   onIssue,
   onSelectPeriod,
   periods,
+  previewError,
+  selectedPeriod,
 }: {
+  issueError: string | null;
   isOpen: boolean;
+  isPreviewLoading: boolean;
   isSubmitting: boolean;
   metrics: DashboardPassportMetric[];
   onClose: () => void;
   onIssue: () => void;
   onSelectPeriod: (period: DashboardPassportPeriod["id"]) => void;
   periods: DashboardPassportPeriod[];
+  previewError: string | null;
+  selectedPeriod: DashboardPassportPeriod["id"];
 }) {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose}>
@@ -55,64 +63,86 @@ function PassportIssueSheet({
         <section className="grid gap-2">
           <p className="text-sm font-semibold text-secondary">Pilih Periode Data</p>
           <div className="grid grid-cols-3 gap-2">
-            {periods.map((option) => (
-              <button
-                className={`grid min-h-[70px] place-items-center rounded-[18px] border px-2 py-3 text-center transition-colors ${
-                  option.selected
-                    ? "border-primary bg-primary text-white shadow-[0_10px_22px_rgba(48,102,190,0.22)]"
-                    : "border-black/10 bg-white text-secondary/40"
-                }`}
-                key={option.id}
-                onClick={() => onSelectPeriod(option.id)}
-                type="button"
-              >
-                <span className="text-sm font-bold">{option.label}</span>
-                <span
-                  className={`text-[11px] ${option.selected ? "text-white/76" : "text-secondary/30"}`}
+            {periods.map((option) => {
+              const isSelected = option.id === selectedPeriod;
+
+              return (
+                <button
+                  aria-pressed={isSelected}
+                  className={`grid min-h-[70px] place-items-center rounded-[18px] border px-2 py-3 text-center transition-colors ${
+                    isSelected
+                      ? "border-primary bg-primary text-white shadow-[0_10px_22px_rgba(48,102,190,0.22)]"
+                      : "border-black/10 bg-white text-secondary/40"
+                  }`}
+                  disabled={isSubmitting}
+                  key={option.id}
+                  onClick={() => onSelectPeriod(option.id)}
+                  type="button"
                 >
-                  {option.range}
-                </span>
-              </button>
-            ))}
+                  <span className="text-sm font-bold">{option.label}</span>
+                  <span
+                    className={`text-[11px] ${isSelected ? "text-white/76" : "text-secondary/30"}`}
+                  >
+                    {option.range}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </section>
 
         <section className="grid gap-2">
           <p className="text-sm font-semibold text-secondary">Data yang Akan Dimasukkan</p>
-          <div className="rounded-[22px] border border-black/6 bg-white p-3 shadow-[0_10px_22px_rgba(23,23,56,0.04)]">
-            <div className="grid grid-cols-2 gap-2">
-              {metrics.map((metric) => (
-                <article
-                  className={`rounded-[16px] px-3 py-3 ${
-                    metric.tone === "success" ? "bg-emerald-50" : "bg-secondary/[0.03]"
-                  }`}
-                  key={metric.label}
-                >
-                  <p className="text-[11px] font-medium leading-4 text-secondary/32">
-                    {metric.label}
-                  </p>
-                  <p
-                    className={`mt-2 text-[1.15rem] font-bold tracking-[-0.04em] ${
-                      metric.tone === "success" ? "text-emerald-600" : "text-primary"
-                    }`}
-                  >
-                    {metric.value}
-                  </p>
-                </article>
+          {isPreviewLoading ? (
+            <div className="grid grid-cols-2 gap-2 rounded-[22px] border border-black/6 bg-white p-3">
+              {[0, 1, 2, 3].map((item) => (
+                <div
+                  className="h-[76px] animate-pulse rounded-[16px] bg-secondary/[0.045]"
+                  key={item}
+                />
               ))}
             </div>
-
-            <div className="mt-3 grid gap-2 border-t border-black/6 pt-3 text-sm font-semibold text-primary">
-              <p className="flex items-center gap-2">
-                <Icon className="h-4 w-4" icon="solar:shield-keyhole-bold-duotone" />
-                Ditandatangani Digital (RSA-2048)
-              </p>
-              <p className="flex items-center gap-2">
-                <Icon className="h-4 w-4" icon="solar:verified-check-bold-duotone" />
-                Kode verifikasi unik digenerate
-              </p>
+          ) : previewError ? (
+            <div className="flex items-start gap-3 rounded-[18px] border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900">
+              <Icon className="mt-0.5 h-5 w-5 shrink-0" icon="solar:info-circle-bold" />
+              <p className="text-sm leading-6">{previewError}</p>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-[22px] border border-black/6 bg-white p-3 shadow-[0_10px_22px_rgba(23,23,56,0.04)]">
+              <div className="grid grid-cols-2 gap-2">
+                {metrics.map((metric) => (
+                  <article
+                    className={`rounded-[16px] px-3 py-3 ${
+                      metric.tone === "success" ? "bg-emerald-50" : "bg-secondary/[0.03]"
+                    }`}
+                    key={metric.label}
+                  >
+                    <p className="text-[11px] font-medium leading-4 text-secondary/32">
+                      {metric.label}
+                    </p>
+                    <p
+                      className={`mt-2 text-[1.15rem] font-bold tracking-[-0.04em] ${
+                        metric.tone === "success" ? "text-emerald-600" : "text-primary"
+                      }`}
+                    >
+                      {metric.value}
+                    </p>
+                  </article>
+                ))}
+              </div>
+
+              <div className="mt-3 grid gap-2 border-t border-black/6 pt-3 text-sm font-semibold text-primary">
+                <p className="flex items-center gap-2">
+                  <Icon className="h-4 w-4" icon="solar:shield-keyhole-bold-duotone" />
+                  Ditandatangani Digital (RSA-2048)
+                </p>
+                <p className="flex items-center gap-2">
+                  <Icon className="h-4 w-4" icon="solar:verified-check-bold-duotone" />
+                  Kode verifikasi unik digenerate
+                </p>
+              </div>
+            </div>
+          )}
         </section>
 
         <div className="rounded-[18px] border border-primary/10 bg-primary/5 px-4 py-3 text-sm leading-6 text-secondary/55">
@@ -126,13 +156,26 @@ function PassportIssueSheet({
           </p>
         </div>
 
+        {issueError ? (
+          <div className="flex items-start gap-2 rounded-[16px] border border-red-200 bg-red-50 px-4 py-3 text-red-700">
+            <Icon className="mt-0.5 h-4 w-4 shrink-0" icon="solar:danger-circle-bold" />
+            <p className="text-sm leading-5">{issueError}</p>
+          </div>
+        ) : null}
+
         <PressButton
           className="min-h-[58px] w-full justify-center text-base"
-          disabled={metrics.length === 0 || isSubmitting}
+          disabled={
+            isPreviewLoading || Boolean(previewError) || metrics.length === 0 || isSubmitting
+          }
           onClick={onIssue}
           variant="primary"
         >
-          {isSubmitting ? "Menerbitkan..." : "Terbitkan Sekarang"}
+          {isPreviewLoading
+            ? "Memuat preview..."
+            : isSubmitting
+              ? "Menerbitkan..."
+              : "Terbitkan Sekarang"}
         </PressButton>
       </div>
     </BottomSheet>
@@ -143,11 +186,15 @@ export function DashboardPassportView() {
   const [isIssueSheetOpen, setIsIssueSheetOpen] = useState(false);
   const isHydrated = useDashboardHydrated();
   const {
+    clearIssueError,
     data,
     error,
     isIssuing,
     isLoading,
+    isPreviewLoading,
+    issueError,
     issuePassport,
+    selectedPeriod,
     setSelectedPeriod,
   } = useDashboardPassportData();
 
@@ -155,6 +202,14 @@ export function DashboardPassportView() {
     return <DashboardScreenSkeleton />;
   }
   const safeData = data;
+  const closeIssueSheet = () => {
+    clearIssueError();
+    setIsIssueSheetOpen(false);
+  };
+  const openIssueSheet = () => {
+    clearIssueError();
+    setIsIssueSheetOpen(true);
+  };
 
   return (
     <>
@@ -276,7 +331,7 @@ export function DashboardPassportView() {
                 <PressButton
                   className="px-4 py-2 text-sm"
                   disabled={!safeData?.summary.isEligible}
-                  onClick={() => setIsIssueSheetOpen(true)}
+                  onClick={openIssueSheet}
                   variant="primary"
                 >
                   Terbitkan Sekarang
@@ -298,7 +353,7 @@ export function DashboardPassportView() {
           <PressButton
             className="min-h-14 w-full justify-center gap-2 bg-tertiary text-base font-bold text-secondary hover:bg-tertiary/96"
             disabled={!safeData?.summary.isEligible}
-            onClick={() => setIsIssueSheetOpen(true)}
+            onClick={openIssueSheet}
             variant="secondary"
           >
             <Icon className="h-5 w-5" icon="solar:add-circle-bold" />
@@ -308,19 +363,23 @@ export function DashboardPassportView() {
       </main>
 
       <PassportIssueSheet
+        issueError={issueError}
         isOpen={isIssueSheetOpen}
+        isPreviewLoading={isPreviewLoading}
         isSubmitting={isIssuing}
         metrics={safeData?.metrics ?? []}
-        onClose={() => setIsIssueSheetOpen(false)}
+        onClose={closeIssueSheet}
         onIssue={() => {
           void issuePassport().then((isSuccess) => {
             if (isSuccess) {
-              setIsIssueSheetOpen(false);
+              closeIssueSheet();
             }
           });
         }}
         onSelectPeriod={setSelectedPeriod}
         periods={safeData?.issuePeriods ?? []}
+        previewError={safeData?.previewError ?? null}
+        selectedPeriod={selectedPeriod}
       />
     </>
   );

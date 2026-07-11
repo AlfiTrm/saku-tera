@@ -1,18 +1,22 @@
 "use client";
 
 import { Icon } from "@iconify/react";
+import { useState } from "react";
 import { useDashboardHydrated } from "@/src/features/dashboard/hooks/useDashboardHydrated";
 import { useDashboardLedgerData } from "@/src/features/dashboard/hooks/useDashboardLedgerData";
 import { DashboardEmptyState } from "./DashboardEmptyState";
 import { DashboardPageHeader } from "./DashboardPageHeader";
 import { DashboardScreenSkeleton } from "./DashboardScreenSkeleton";
+import { LedgerSourceFilterSheet } from "./LedgerSourceFilterSheet";
 
 export function DashboardLedgerView() {
   const isHydrated = useDashboardHydrated();
+  const [isSourceFilterOpen, setIsSourceFilterOpen] = useState(false);
   const {
     data,
     error,
     isLoading,
+    selectedPeriod,
     selectedSourceId,
     setSelectedPeriod,
     setSelectedSourceId,
@@ -37,6 +41,9 @@ export function DashboardLedgerView() {
     } as const);
 
   const [integrityCount, integrityStatus] = safeData.integrityLabel.split(" / ");
+  const selectedSource = safeData.sourceOptions.find(
+    (source) => source.id === selectedSourceId,
+  );
 
   return (
     <>
@@ -54,13 +61,14 @@ export function DashboardLedgerView() {
         />
 
         <section className="px-1">
-          <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="grid grid-cols-3 rounded-[18px] bg-secondary/[0.045] p-1">
             {safeData.filters.map((filter) => (
               <button
-                className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-                  filter.active
-                    ? "border-secondary bg-secondary text-white shadow-[0_8px_18px_rgba(23,23,56,0.14)]"
-                    : "border-black/10 bg-white text-secondary/45"
+                aria-pressed={filter.id === selectedPeriod}
+                className={`min-h-10 rounded-[14px] px-2 text-sm font-semibold transition-colors ${
+                  filter.id === selectedPeriod
+                    ? "bg-secondary text-white"
+                    : "text-secondary/48 hover:text-secondary/70"
                 }`}
                 key={filter.id}
                 onClick={() => setSelectedPeriod(filter.id as "all" | "bulan_ini" | "3_bulan")}
@@ -72,34 +80,28 @@ export function DashboardLedgerView() {
           </div>
         </section>
 
-        <section className="px-1 pt-2">
-          <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <button
-              className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-                !selectedSourceId
-                  ? "border-secondary bg-secondary text-white shadow-[0_8px_18px_rgba(23,23,56,0.14)]"
-                  : "border-black/10 bg-white text-secondary/45"
-              }`}
-              onClick={() => setSelectedSourceId("")}
-              type="button"
-            >
-              Semua sumber
-            </button>
-            {safeData.sourceOptions.map((source) => (
-              <button
-                className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-                  selectedSourceId === source.id
-                    ? "border-secondary bg-secondary text-white shadow-[0_8px_18px_rgba(23,23,56,0.14)]"
-                    : "border-black/10 bg-white text-secondary/45"
-                }`}
-                key={source.id}
-                onClick={() => setSelectedSourceId(source.id)}
-                type="button"
-              >
-                {source.label}
-              </button>
-            ))}
-          </div>
+        <section className="px-1 pt-3">
+          <p className="mb-1.5 px-1 text-[11px] font-semibold text-secondary/42">
+            Sumber penghasilan
+          </p>
+          <button
+            aria-expanded={isSourceFilterOpen}
+            aria-haspopup="dialog"
+            className="flex min-h-13 w-full items-center gap-3 rounded-[17px] border border-black/10 bg-white px-3.5 text-left transition-colors hover:border-primary/25"
+            onClick={() => setIsSourceFilterOpen(true)}
+            type="button"
+          >
+            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
+              <Icon
+                className="h-[18px] w-[18px]"
+                icon={selectedSource?.icon || "solar:wallet-money-bold"}
+              />
+            </span>
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-secondary">
+              {selectedSource?.label || "Semua sumber"}
+            </span>
+            <Icon className="h-5 w-5 shrink-0 text-secondary/35" icon="solar:alt-arrow-down-linear" />
+          </button>
         </section>
 
         <section className="mt-4 grid gap-3">
@@ -155,6 +157,13 @@ export function DashboardLedgerView() {
         </section>
       </main>
 
+      <LedgerSourceFilterSheet
+        isOpen={isSourceFilterOpen}
+        onClose={() => setIsSourceFilterOpen(false)}
+        onSelect={setSelectedSourceId}
+        options={safeData.sourceOptions}
+        selectedSourceId={selectedSourceId}
+      />
     </>
   );
 }
