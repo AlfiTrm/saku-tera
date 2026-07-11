@@ -44,8 +44,6 @@ export type CreateIncomeEntryPayload = {
   transactionDate: string;
 };
 
-export type IncomeEntryMethod = "manual" | "document";
-
 export type IncomeDocumentType =
   | "invoice"
   | "salary-slip"

@@ -356,10 +356,16 @@ export async function extractIncomeDocument(
 ): Promise<IncomeDocumentExtraction> {
   const normalizedName = file.name.toLowerCase();
   const fileType = file.type.toLowerCase();
+  const supportedImageTypes = new Set([
+    "image/heic",
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+  ]);
   const isPdf =
     normalizedName.endsWith(".pdf") || fileType === "application/pdf";
   const isImage =
-    fileType.startsWith("image/") ||
+    supportedImageTypes.has(fileType) ||
     /\.(png|jpe?g|webp|heic)$/i.test(normalizedName);
 
   if (!isPdf && !isImage) {
