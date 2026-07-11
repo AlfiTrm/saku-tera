@@ -33,7 +33,7 @@ function PassportIssueSheet({
   isSubmitting: boolean;
   metrics: DashboardPassportMetric[];
   onClose: () => void;
-  onIssue: () => void;
+  onIssue: () => Promise<void>;
   onSelectPeriod: (period: DashboardPassportPeriod["id"]) => void;
   periods: DashboardPassportPeriod[];
   previewError: string | null;
@@ -369,12 +369,12 @@ export function DashboardPassportView() {
         isSubmitting={isIssuing}
         metrics={safeData?.metrics ?? []}
         onClose={closeIssueSheet}
-        onIssue={() => {
-          void issuePassport().then((isSuccess) => {
-            if (isSuccess) {
-              closeIssueSheet();
-            }
-          });
+        onIssue={async () => {
+          const isSuccess = await issuePassport();
+
+          if (isSuccess) {
+            closeIssueSheet();
+          }
         }}
         onSelectPeriod={setSelectedPeriod}
         periods={safeData?.issuePeriods ?? []}

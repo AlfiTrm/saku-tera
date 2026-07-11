@@ -7,7 +7,7 @@ import type { PassportAccessEntry } from "@/src/features/dashboard/types/passpor
 type PassportAccessCardProps = {
   entry: PassportAccessEntry;
   isRevoking?: boolean;
-  onRevoke?: (consentId: string) => void;
+  onRevoke?: (consentId: string) => void | Promise<unknown>;
 };
 
 export function PassportAccessCard({

@@ -67,9 +67,7 @@ export function PassportAccessView() {
                   entry={entry}
                   isRevoking={revokingConsentId === entry.id}
                   key={entry.id}
-                  onRevoke={(consentId) => {
-                    void revokeAccess(consentId);
-                  }}
+                  onRevoke={revokeAccess}
                 />
               ))}
             </div>
