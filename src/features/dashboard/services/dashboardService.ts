@@ -67,7 +67,7 @@ type TransactionSourcesResponse = {
     name: string;
     provider: string;
     transaction_source_id: string;
-  }>;
+  }> | null;
 };
 
 type LedgerResponse = {
@@ -157,16 +157,29 @@ function mapSourceIcon(name: string, provider: string) {
 function mapSourceOptions(
   response: TransactionSourcesResponse,
 ): IncomeSourceOption[] {
-  return response.sources.map((source) => ({
+  return (response.sources ?? []).map((source) => ({
     icon: mapSourceIcon(source.name, source.provider),
     id: source.transaction_source_id,
     label: `${source.name} - ${source.provider}`,
+    name: source.name,
+    provider: source.provider,
   }));
 }
 
-export async function getTransactionSourceOptions(): Promise<IncomeSourceOption[]> {
+export async function getTransactionSourceOptions(
+  provider?: string,
+): Promise<IncomeSourceOption[]> {
+  const queryParams = new URLSearchParams();
+
+  if (provider) {
+    queryParams.set("provider", provider);
+  }
+
+  const path = queryParams.size
+    ? `/transactions/sources?${queryParams.toString()}`
+    : "/transactions/sources";
   const response = await apiRequest<TransactionSourcesResponse>(
-    "/transactions/sources",
+    path,
     {
       headers: getAuthorizationHeaders(),
       method: "GET",

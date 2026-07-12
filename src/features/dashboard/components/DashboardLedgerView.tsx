@@ -40,10 +40,20 @@ export function DashboardLedgerView() {
       sourceOptions: [],
     } as const);
 
-  const [integrityCount, integrityStatus] = safeData.integrityLabel.split(" / ");
+  const [mappedIntegrityCount, integrityStatus] = safeData.integrityLabel.split(" / ");
   const selectedSource = safeData.sourceOptions.find(
     (source) => source.id === selectedSourceId,
   );
+  const visibleEntries = selectedSourceId
+    ? safeData.entries.filter(
+        (entry) =>
+          entry.source.trim().toLocaleLowerCase("id") ===
+          selectedSource?.label.trim().toLocaleLowerCase("id"),
+      )
+    : safeData.entries;
+  const integrityCount = selectedSourceId
+    ? `${visibleEntries.length} entri`
+    : mappedIntegrityCount;
 
   return (
     <>
@@ -105,8 +115,8 @@ export function DashboardLedgerView() {
         </section>
 
         <section className="mt-4 grid gap-3">
-          {safeData.entries.length > 0 ? (
-            safeData.entries.map((entry) => (
+          {visibleEntries.length > 0 ? (
+            visibleEntries.map((entry) => (
               <article
                 className="rounded-[20px] border border-black/6 bg-white px-4 py-3 shadow-[0_10px_22px_rgba(23,23,56,0.04)]"
                 key={entry.id}
@@ -147,10 +157,18 @@ export function DashboardLedgerView() {
               description={
                 error
                   ? error
-                  : "Ledger akan terisi begitu kamu mulai mencatat penghasilan."
+                  : selectedSource
+                    ? `Belum ada transaksi dari ${selectedSource.label}.`
+                    : "Ledger akan terisi begitu kamu mulai mencatat penghasilan."
               }
               icon="solar:clipboard-list-bold-duotone"
-              title={error ? "Ledger belum tersedia" : "Ledger masih kosong"}
+              title={
+                error
+                  ? "Ledger belum tersedia"
+                  : selectedSource
+                    ? "Tidak ada transaksi"
+                    : "Ledger masih kosong"
+              }
               tone={error ? "error" : "default"}
             />
           )}

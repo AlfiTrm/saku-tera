@@ -425,10 +425,28 @@ export function mapDashboardLedgerData(
   selectedSourceId: string,
   sourceOptions: DashboardLedgerData["sourceOptions"],
 ): DashboardLedgerData {
+  const selectedSource = sourceOptions.find(
+    (source) => source.id === selectedSourceId,
+  );
+  const transactions = !selectedSourceId
+    ? response.data.transactions
+    : selectedSource
+      ? response.data.transactions.filter(
+          (transaction) =>
+            transaction.source_name.trim().toLocaleLowerCase("id") ===
+              selectedSource.name.trim().toLocaleLowerCase("id") &&
+            transaction.source_provider.trim().toLocaleLowerCase("id") ===
+              selectedSource.provider.trim().toLocaleLowerCase("id"),
+        )
+      : [];
+  const entryCount = selectedSourceId
+    ? transactions.length
+    : response.data.summary.total_entries;
+
   return {
-    entries: response.data.transactions.map(mapTransaction),
+    entries: transactions.map(mapTransaction),
     filters,
-    integrityLabel: `${response.data.summary.total_entries} entri / ${
+    integrityLabel: `${entryCount} entri / ${
       response.data.summary.chain_valid ? "Rantai Hash Valid" : "Rantai Hash Bermasalah"
     }`,
     selectedPeriod,
