@@ -1,8 +1,9 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { BottomSheet } from "@/src/shared/components/overlays";
+import { getTransactionSourceOptions } from "@/src/features/dashboard/services/dashboardService";
 import type { IncomeSourceOption } from "@/src/features/dashboard/types/dashboardData";
 
 type IncomeSourcePickerSheetProps = {
@@ -21,26 +22,97 @@ export function IncomeSourcePickerSheet({
   selectedSourceId,
 }: IncomeSourcePickerSheetProps) {
   const [query, setQuery] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState("");
+  const [providerOptions, setProviderOptions] = useState<IncomeSourceOption[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const providerCacheRef = useRef(new Map<string, IncomeSourceOption[]>());
+  const requestIdRef = useRef(0);
+  const providers = useMemo(
+    () => Array.from(new Set(options.map((option) => option.provider))).filter(Boolean),
+    [options],
+  );
+  const activeOptions = selectedProvider ? providerOptions : options;
   const filteredOptions = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("id");
 
     if (!normalizedQuery) {
-      return options;
+      return activeOptions;
     }
 
-    return options.filter((option) =>
-      option.label.toLocaleLowerCase("id").includes(normalizedQuery),
+    return activeOptions.filter((option) =>
+      `${option.name} ${option.provider}`
+        .toLocaleLowerCase("id")
+        .includes(normalizedQuery),
     );
-  }, [options, query]);
+  }, [activeOptions, query]);
 
   function closeSheet() {
+    requestIdRef.current += 1;
     setQuery("");
+    setSelectedProvider("");
+    setProviderOptions([]);
+    setIsLoading(false);
+    setLoadError("");
     onClose();
   }
 
   function selectSource(sourceId: string) {
     onSelect(sourceId);
     closeSheet();
+  }
+
+  async function selectProvider(provider: string) {
+    if (provider === selectedProvider || isLoading) {
+      return;
+    }
+
+    setSelectedProvider(provider);
+    setQuery("");
+    setLoadError("");
+
+    if (!provider) {
+      requestIdRef.current += 1;
+      setProviderOptions([]);
+      return;
+    }
+
+    const cachedOptions = providerCacheRef.current.get(provider);
+
+    if (cachedOptions) {
+      setProviderOptions(cachedOptions);
+      return;
+    }
+
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    setIsLoading(true);
+
+    try {
+      const nextOptions = await getTransactionSourceOptions(provider);
+
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
+
+      providerCacheRef.current.set(provider, nextOptions);
+      setProviderOptions(nextOptions);
+    } catch (error) {
+      if (requestIdRef.current !== requestId) {
+        return;
+      }
+
+      setProviderOptions([]);
+      setLoadError(
+        error instanceof Error
+          ? error.message
+          : "Sumber penghasilan belum bisa dimuat.",
+      );
+    } finally {
+      if (requestIdRef.current === requestId) {
+        setIsLoading(false);
+      }
+    }
   }
 
   return (
@@ -67,11 +139,40 @@ export function IncomeSourcePickerSheet({
           </button>
         </div>
 
+        <div className="mt-4">
+          <p className="mb-2 text-[11px] font-semibold text-secondary/42">
+            Kategori provider
+          </p>
+          <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {["", ...providers].map((provider) => {
+              const isSelected = provider === selectedProvider;
+
+              return (
+                <button
+                  aria-pressed={isSelected}
+                  className={`min-h-9 shrink-0 rounded-full border px-3.5 text-xs font-semibold transition-colors ${
+                    isSelected
+                      ? "border-secondary bg-secondary text-white"
+                      : "border-black/10 bg-white text-secondary/52"
+                  }`}
+                  disabled={isLoading}
+                  key={provider || "all"}
+                  onClick={() => void selectProvider(provider)}
+                  type="button"
+                >
+                  {provider || "Semua"}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <label className="mt-4 flex min-h-12 items-center gap-2 rounded-[16px] border border-black/8 bg-white px-3 focus-within:border-primary/45 focus-within:ring-2 focus-within:ring-primary/10">
           <Icon className="h-5 w-5 shrink-0 text-secondary/35" icon="solar:magnifer-linear" />
           <input
             autoFocus
             className="min-w-0 flex-1 bg-transparent text-sm font-medium text-secondary outline-none placeholder:text-secondary/35"
+            disabled={isLoading}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Cari sumber penghasilan..."
             value={query}
@@ -79,7 +180,19 @@ export function IncomeSourcePickerSheet({
         </label>
 
         <div className="mt-3 min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          {filteredOptions.map((option) => {
+          {isLoading ? (
+            <div className="grid justify-items-center gap-2 py-8 text-center">
+              <span className="h-6 w-6 animate-spin rounded-full border-2 border-primary/20 border-r-primary" />
+              <p className="text-sm font-medium text-secondary/42">
+                Memuat sumber {selectedProvider}...
+              </p>
+            </div>
+          ) : loadError ? (
+            <div className="grid justify-items-center gap-2 rounded-[16px] bg-red-50 px-4 py-6 text-center text-red-600">
+              <Icon className="h-6 w-6" icon="solar:danger-circle-bold" />
+              <p className="text-sm font-medium">{loadError}</p>
+            </div>
+          ) : filteredOptions.map((option) => {
             const isSelected = option.id === selectedSourceId;
 
             return (
@@ -97,8 +210,13 @@ export function IncomeSourcePickerSheet({
                 <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <Icon className="h-5 w-5" icon={option.icon} />
                 </span>
-                <span className="min-w-0 flex-1 truncate text-sm font-semibold">
-                  {option.label}
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold">
+                    {option.name}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] font-medium text-secondary/38">
+                    {option.provider}
+                  </span>
                 </span>
                 <Icon
                   className={`h-5 w-5 text-primary ${isSelected ? "opacity-100" : "opacity-0"}`}
@@ -108,7 +226,7 @@ export function IncomeSourcePickerSheet({
             );
           })}
 
-          {filteredOptions.length === 0 ? (
+          {!isLoading && !loadError && filteredOptions.length === 0 ? (
             <div className="grid justify-items-center gap-2 py-8 text-center">
               <Icon className="h-7 w-7 text-secondary/25" icon="solar:magnifer-linear" />
               <p className="text-sm font-medium text-secondary/42">

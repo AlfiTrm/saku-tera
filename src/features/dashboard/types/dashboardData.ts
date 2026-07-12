@@ -35,6 +35,8 @@ export type IncomeSourceOption = {
   icon: string;
   id: string;
   label: string;
+  name: string;
+  provider: string;
 };
 
 export type CreateIncomeEntryPayload = {
